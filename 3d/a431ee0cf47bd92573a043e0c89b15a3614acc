@@ -1,0 +1,19 @@
+.gitignore
+  s_93c98bcb5e3166::t_43fbb938369e84 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3da431ee0cf47bd92573a043e0c89b15a3614acc",
+  "prompts": {},
+  "sessions": {
+    "s_93c98bcb5e3166": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28ed3d37-7ae4-46cf-8b9a-5960d8fe6a62",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

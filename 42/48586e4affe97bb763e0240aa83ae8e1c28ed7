@@ -1,0 +1,25 @@
+lib/steps.ts
+  s_93c98bcb5e3166::t_9c7e0eeef06b40 324-327,334-336
+  s_93c98bcb5e3166::t_ad74c7b06ade86 191-194,201-203
+  s_93c98bcb5e3166::t_4efeb7ce463be0 296-299,306-308
+  s_93c98bcb5e3166::t_b73deb282fc69f 240-243,250-251,253-257,259
+  s_93c98bcb5e3166::t_79c406be3adbc0 371,380,383
+  s_93c98bcb5e3166::t_b3263fb0e57b6e 7-12
+  s_93c98bcb5e3166::t_602517c588071b 110-113,120-121,123-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4248586e4affe97bb763e0240aa83ae8e1c28ed7",
+  "prompts": {},
+  "sessions": {
+    "s_93c98bcb5e3166": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28ed3d37-7ae4-46cf-8b9a-5960d8fe6a62",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

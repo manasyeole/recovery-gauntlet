@@ -4,9 +4,12 @@
  * This array is the whole gauntlet. Edit the copy freely — the wizard,
  * progress bar, API and certificate all read from here.
  *
- * Six steps are marked `yourTurn: true` (5, 10, 14, 17, 19). They ship with
- * generic filler that *works*, but the site is 10x funnier once you replace
- * them with real inside jokes. Search this file for "[YOUR TURN]".
+ * Five steps are marked `yourTurn: true` (5, 10, 14, 17, 19). These are the
+ * personalisation slots — they're fully written and land fine as-is, but they
+ * get sharper with a real inside joke. Search for "PERSONALISE ME".
+ *
+ * NOTE: `hint` renders on screen, under the question. Author notes belong in
+ * comments, never in `hint` — a stray note there is visible to the visitor.
  *
  * `spotlight: true` marks answers worth quoting on the certificate screen.
  */
@@ -104,23 +107,25 @@ export const STEPS: Step[] = [
     confetti: true,
   },
 
-  // ============================= [YOUR TURN] =============================
-  // Step 5 — reference how the injury ACTUALLY happened, if it's a good
-  // story. Swap the question + options below for the real version.
-  // =======================================================================
+  // --- PERSONALISE ME (step 5) -------------------------------------------
+  // Works as-is for any leg injury. If the real story is good, replace the
+  // options with it — keep one deliberately absurd option in the list.
+  // -----------------------------------------------------------------------
   {
     number: 5,
     kind: "tease",
     type: "choice",
     emoji: "🎬",
     question:
-      "Let's set the record straight. Which version of the story are we going with publicly?",
-    hint: "[YOUR TURN] Replace these options with the real story vs. the version they tell people.",
+      "Official Incident Report. For the permanent record: what actually took you down?",
+    hint: "Choose carefully. This is the version history will remember.",
     options: [
-      "The heroic version I've been telling everyone",
-      "The deeply embarrassing true version",
-      "A tragic accident, no further questions",
-      "I genuinely still don't know what happened",
+      "Sports. I was being athletic and the universe objected.",
+      "Stairs. Not even a lot of them.",
+      "A vehicle was involved and I'd rather not elaborate.",
+      "I was rushing somewhere that would have waited for me.",
+      "Genuinely nothing. My leg resigned without notice.",
+      "I know exactly what happened and I will never tell you.",
     ],
     spotlight: true,
     yourTurn: true,
@@ -183,19 +188,19 @@ export const STEPS: Step[] = [
     required: true,
   },
 
-  // ============================= [YOUR TURN] =============================
-  // Step 10 — an inside joke about their clumsiness, how you found out, or
-  // their reaction. Good slot for "remember when you also did X".
-  // =======================================================================
+  // --- PERSONALISE ME (step 10) ------------------------------------------
+  // Swap in the actual message they sent you, if you still have it. Quoting
+  // it back at them lands harder than asking.
+  // -----------------------------------------------------------------------
   {
     number: 10,
     kind: "tease",
     type: "longtext",
     emoji: "📞",
     question:
-      "Walk me through the exact moment you had to tell people what happened. Word for word.",
-    hint: "[YOUR TURN] Swap in your own bit — the group-chat message, the phone call, the excuse.",
-    placeholder: "It started with me saying 'okay so don't panic'…",
+      "Reconstruct the message you sent when you broke the news — including the part where you undersold it.",
+    hint: "We've all read that message. We just want it in writing, from you.",
+    placeholder: "hey so minor thing, don't freak out…",
     spotlight: true,
     yourTurn: true,
   },
@@ -232,24 +237,26 @@ export const STEPS: Step[] = [
     spotlight: true,
   },
 
-  // ============================= [YOUR TURN] =============================
-  // Step 14 — the shared plan / trip / match / party this injury is now
-  // ruining. Prime good-natured guilt-tripping territory.
-  // =======================================================================
+  // --- PERSONALISE ME (step 14) ------------------------------------------
+  // Name the actual trip/match/wedding for maximum guilt. The generic
+  // categories below still work if there isn't one.
+  // -----------------------------------------------------------------------
   {
     number: 14,
     kind: "tease",
     type: "choice",
     emoji: "🗓️",
     question:
-      "Quick reminder that you have personally sabotaged plans we had. How do you plead?",
-    hint: "[YOUR TURN] Name the actual trip/game/event here and make the options specific.",
+      "Let the record show you have personally cancelled things. Which category of plan did you destroy?",
+    hint: "Sentencing will be handled by the group chat.",
     options: [
-      "Guilty. I will compensate you in food.",
-      "Not guilty — we can still go, I'll just be slow",
-      "I'd like to reschedule to a vague future date",
-      "I refuse to acknowledge this question",
+      "A trip. Deposits were paid. People are upset.",
+      "A match I was, allegedly, essential to.",
+      "An event I now get to attend seated.",
+      "Nothing — I've just made everything 40% slower.",
+      "I have cancelled nothing. I will be attending. Horizontally if needed.",
     ],
+    spotlight: true,
     yourTurn: true,
     required: true,
   },
@@ -286,18 +293,19 @@ export const STEPS: Step[] = [
     required: true,
   },
 
-  // ============================= [YOUR TURN] =============================
-  // Step 17 — the running bit / nickname specific to this friend.
-  // =======================================================================
+  // --- PERSONALISE ME (step 17) ------------------------------------------
+  // If they already have a nickname, work it into the question so they have
+  // to defend it.
+  // -----------------------------------------------------------------------
   {
     number: 17,
     kind: "tease",
     type: "text",
     emoji: "🏷️",
     question:
-      "Given recent events, propose your new official nickname. It will be adopted immediately and permanently.",
-    hint: "[YOUR TURN] Put the actual running bit or existing nickname in here.",
-    placeholder: "Make it dignified. You won't.",
+      "Propose your new legal name. It must reference the injury. It will be used in group chats, at formal occasions, and eventually in your eulogy.",
+    hint: "Whatever you type here is binding. Choose accordingly.",
+    placeholder: "Set the bar higher than 'One-Leg Larry'",
     spotlight: true,
     yourTurn: true,
   },
@@ -313,18 +321,19 @@ export const STEPS: Step[] = [
     required: true,
   },
 
-  // ============================= [YOUR TURN] =============================
-  // Step 19 — closing tease. Something only this friend group would get.
-  // =======================================================================
+  // --- PERSONALISE ME (step 19) ------------------------------------------
+  // Best slot for the joke only your group would get. Point the question at
+  // one specific unresolved crime.
+  // -----------------------------------------------------------------------
   {
     number: 19,
     kind: "tease",
     type: "longtext",
     emoji: "😈",
     question:
-      "Final accusation before we let you go. Anything you'd like to admit to the group now, while you can't run away?",
-    hint: "[YOUR TURN] This is the slot for the joke only your people would understand.",
-    placeholder: "Fine. Yes. It was me.",
+      "Last chance. You are immobile, cornered, and legally obliged to answer: what have you been getting away with that we should know about?",
+    hint: "You physically cannot run away from this question. That was the whole plan.",
+    placeholder: "Fine. Okay. So.",
     spotlight: true,
     yourTurn: true,
   },
@@ -359,7 +368,7 @@ export const SHORT_LABELS: Record<number, string> = {
   2: "Drama level",
   3: "Failed normal walks",
   4: "Said 'ouch'",
-  5: "Official story",
+  5: "Cause of downfall",
   6: "Bed-rot level",
   7: "Emergency mobility aid",
   8: "Runway commentary",
@@ -368,10 +377,10 @@ export const SHORT_LABELS: Record<number, string> = {
   11: "Proof of resting",
   12: "What the leg is yelling",
   13: "Most ridiculous fetch request",
-  14: "Plans sabotaged — plea",
+  14: "Plans destroyed",
   15: "Single-leg victory pose",
   16: "Recovery TV rating",
-  17: "New nickname",
+  17: "New legal name",
   18: "Googled symptoms 5+ times",
   19: "Final confession",
   20: "Advice for the next idiot",

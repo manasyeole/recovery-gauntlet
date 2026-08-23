@@ -1,0 +1,28 @@
+package.json
+  s_93c98bcb5e3166::t_b12eee8a7ca641 7,12-13
+scripts/migrate.mjs
+  s_93c98bcb5e3166::t_1ab8f0851411ae 1-53
+lib/prisma.ts
+  s_93c98bcb5e3166::t_e2757029fda73c 3-28,30,35,37,47-48
+prisma/schema.prisma
+  s_93c98bcb5e3166::t_d88196c1e3e1ee 9-10,13-17
+  s_93c98bcb5e3166::t_84045f00a71574 18
+prisma/migrations/0_init/migration.sql
+  s_93c98bcb5e3166::t_2f6b65c19106ff 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "89f2c42b5cf3487e6b068f66708e4e7217951aa1",
+  "prompts": {},
+  "sessions": {
+    "s_93c98bcb5e3166": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28ed3d37-7ae4-46cf-8b9a-5960d8fe6a62",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

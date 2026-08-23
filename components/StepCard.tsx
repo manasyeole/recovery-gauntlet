@@ -3,6 +3,7 @@
 import { tintFor, type Step } from "@/lib/steps";
 import ChoiceField from "./inputs/ChoiceField";
 import ConfirmButton from "./inputs/ConfirmButton";
+import GuessField, { guessesComplete } from "./inputs/GuessField";
 import HoldButton from "./inputs/HoldButton";
 import NumberField from "./inputs/NumberField";
 import SliderField from "./inputs/SliderField";
@@ -16,6 +17,7 @@ const FIELDS: Record<Step["type"], (p: FieldProps) => React.JSX.Element> = {
   slider: SliderField,
   choice: ChoiceField,
   yesno: ChoiceField,
+  guesses: GuessField,
   confirm: ConfirmButton,
   hold: HoldButton,
 };
@@ -46,7 +48,10 @@ export default function StepCard({
   // A step with a reveal has to wait for the visitor to read the punchline,
   // so it keeps its Continue button.
   const selfAdvancing = SELF_ADVANCING.has(step.type) && !step.reveal;
-  const blocked = Boolean(step.required) && value.trim().length === 0;
+  const blocked =
+    step.type === "guesses"
+      ? Boolean(step.required) && !guessesComplete(step, value)
+      : Boolean(step.required) && value.trim().length === 0;
   const tint = tintFor(step.number);
 
   return (

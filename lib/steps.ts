@@ -1,10 +1,10 @@
 /**
- * THE 12 STEPS
+ * THE 13 STEPS
  * ============
  * This array is the whole gauntlet. Edit the copy freely — the wizard,
  * progress bar, API and certificate all read from here.
  *
- * Four steps are marked `yourTurn: true` (4, 6, 7, 9). These are the
+ * Four steps are marked `yourTurn: true` (4, 5, 7, 9). These are the
  * personalisation slots — they land fine as-is, but they get sharper with a
  * real inside joke. Search for "PERSONALISE ME".
  *
@@ -22,6 +22,7 @@ export type StepType =
   | "slider" // range slider with end labels
   | "choice" // list of tappable options
   | "yesno" // two big buttons
+  | "guesses" // a row of text boxes, then a punchline
   | "confirm" // one big "I did it" button
   | "hold"; // hold-to-confirm for N seconds
 
@@ -42,10 +43,18 @@ export interface Step {
   placeholder?: string;
   options?: string[];
   /**
-   * `choice` only. When set, picking an option reveals this punchline instead
-   * of advancing, and the visitor taps Continue themselves.
+   * `choice` / `yesno` / `guesses`. When set, the visitor gets this punchline
+   * once they've committed, and taps Continue themselves instead of the step
+   * auto-advancing.
    */
   reveal?: string;
+  /**
+   * `choice` / `yesno`. Records this answer no matter which option they tap —
+   * and highlights it, which is the joke. Use sparingly; it is a lie.
+   */
+  forceAnswer?: string;
+  /** `guesses` only — how many boxes. Defaults to 3. */
+  guessCount?: number;
   /** slider / number only */
   min?: number;
   max?: number;
@@ -54,6 +63,8 @@ export interface Step {
   maxLabel?: string;
   /** confirm / hold only — the button label */
   cta?: string;
+  /** `confirm` only — what the button says once pressed. */
+  confirmedLabel?: string;
   /** hold only */
   holdSeconds?: number;
   /** Can they skip it? Activities are skippable; real questions mostly aren't. */
@@ -74,8 +85,8 @@ export const STEPS: Step[] = [
     kind: "greeting",
     type: "text",
     emoji: "🦵",
-    question: "First things first — what should we call you?",
-    hint: "Real name preferred. Nicknames will be used against you later.",
+    question: "First things first — what do we call you?",
+    hint: "Real name preferred.",
     placeholder: "Your name, survivor",
     required: true,
     song: ["first, your name,", "then your excuses"],
@@ -83,42 +94,59 @@ export const STEPS: Step[] = [
   {
     number: 2,
     kind: "tease",
-    type: "slider",
+    type: "yesno",
     emoji: "💊",
-    question: "Your brain is working. The surgery was a success.",
+    question: "Your brain is working?",
+    hint: "Be honest. There is a right answer and it isn’t the flattering one.",
+    forceAnswer: "No",
+    reveal: "Recorded as No — whichever one you tapped. Laughing at how honest that was.",
+    required: true,
+    song: ["nobody’s home", "but the lights are on"],
+  },
+  {
+    number: 3,
+    kind: "tease",
+    type: "slider",
+    emoji: "🩺",
+    question: "The surgery was a success.",
     hint: "Now rate your pain. This meter has heard every lie before.",
     min: 0,
     max: 10,
-    minLabel: "“fine”",
+    minLabel: "“Fine”",
     maxLabel: "Call someone",
     required: true,
     song: ["turn it down,", "I can feel my pulse"],
   },
-  {
-    number: 3,
-    kind: "question",
-    type: "text",
-    emoji: "🚪",
-    question: "Which friend got to you before the swelling did?",
-    hint: "One person. You know exactly who.",
-    placeholder: "The one who brought crisps, not flowers",
-    required: true,
-    spotlight: true,
-    song: ["somebody got here", "before the swelling did"],
-  },
 
   // --- PERSONALISE ME (step 4) -------------------------------------------
-  // The reveal is the whole joke. Swap in whatever the group chat actually
-  // calls them — the three options are meant to all be wrong.
+  // Works as a general dig. Point it at one specific friend if you have one.
   // -----------------------------------------------------------------------
   {
     number: 4,
     kind: "tease",
-    type: "choice",
+    type: "text",
+    emoji: "🚪",
+    question: "Which friend is worse on their legs than you?",
+    hint: "Somebody has to be. Name them.",
+    placeholder: "Be specific. They will hear about this.",
+    required: true,
+    spotlight: true,
+    yourTurn: true,
+    song: ["we are all limping,", "some of us louder"],
+  },
+
+  // --- PERSONALISE ME (step 5) -------------------------------------------
+  // Three guesses, all wrong by design. Swap the reveal for whatever the
+  // group chat actually calls them.
+  // -----------------------------------------------------------------------
+  {
+    number: 5,
+    kind: "tease",
+    type: "guesses",
     emoji: "📵",
     question: "What do your friends actually call you?",
-    hint: "Pick carefully. There is one correct answer and you already know it.",
-    options: ["Champ", "Warrior", "Legend"],
+    hint: "Three guesses. All three will be wrong.",
+    guessCount: 3,
     reveal: "Wrong. It is “bitch”. Said with love, at volume, in the group chat.",
     required: true,
     yourTurn: true,
@@ -126,7 +154,7 @@ export const STEPS: Step[] = [
   },
 
   {
-    number: 5,
+    number: 6,
     kind: "tease",
     type: "text",
     emoji: "😂",
@@ -138,37 +166,21 @@ export const STEPS: Step[] = [
     song: ["you sang the wrong words", "and we let you"],
   },
 
-  // --- PERSONALISE ME (step 6) -------------------------------------------
-  // Name the actual family member if you can get away with it.
-  // -----------------------------------------------------------------------
-  {
-    number: 6,
-    kind: "question",
-    type: "text",
-    emoji: "📞",
-    question: "Who in your family panicked hardest, and how fast?",
-    hint: "Minutes, not hours. Be precise.",
-    placeholder: "Mum, four minutes flat, by phone",
-    required: true,
-    yourTurn: true,
-    song: ["four minutes flat,", "and the phone rang twice"],
-  },
-
   // --- PERSONALISE ME (step 7) -------------------------------------------
-  // Swap the placeholder for whatever actually gets cooked in their house.
+  // Swap in the actual brand name if the answer is funnier that way.
   // -----------------------------------------------------------------------
   {
     number: 7,
     kind: "question",
     type: "text",
     emoji: "🍲",
-    question: "Which family dish did more for you than the painkillers?",
-    hint: "Credit where credit is due.",
-    placeholder: "Rice, ghee, and unsolicited opinions",
+    question: "Do the painkillers actually work on you?",
+    hint: "No wrong answers. Several incriminating ones.",
+    placeholder: "Define “work”",
     required: true,
     spotlight: true,
     yourTurn: true,
-    song: ["the kitchen smelled", "like getting better"],
+    song: ["two in the morning,", "still counting ceiling tiles"],
   },
 
   {
@@ -186,20 +198,20 @@ export const STEPS: Step[] = [
   },
 
   // --- PERSONALISE ME (step 9) -------------------------------------------
-  // Point the reveal at one specific unresolved household crime.
+  // The absurd one. Leave it deadpan — the joke is that it's asked at all.
   // -----------------------------------------------------------------------
   {
     number: 9,
     kind: "tease",
-    type: "choice",
+    type: "text",
     emoji: "🧦",
-    question: "Who put the sock on the bad leg?",
-    hint: "Justice requires a name.",
-    options: ["Me. Heroically.", "Mum", "Nobody. Sock lost."],
-    reveal: "It was gravity, and it took four minutes. We have footage.",
+    question: "How to run?",
+    hint: "You knew this once. Walk us through it.",
+    placeholder: "Step one…",
     required: true,
+    spotlight: true,
     yourTurn: true,
-    song: ["gravity took the sock", "and took its time"],
+    song: ["I knew this once,", "I wrote it down somewhere"],
   },
 
   {
@@ -207,7 +219,7 @@ export const STEPS: Step[] = [
     kind: "question",
     type: "text",
     emoji: "☀️",
-    question: "Best thing that happened this week. It does not have to be big.",
+    question: "Best thing that happened this week?",
     hint: "Small counts. Small is the whole point.",
     placeholder: "Sat outside for eleven whole minutes",
     required: true,
@@ -232,13 +244,24 @@ export const STEPS: Step[] = [
     kind: "closing",
     type: "text",
     emoji: "🎓",
-    question: "One line of advice for the next unlucky soul.",
+    question: "One line of advice for the next unlucky soul who can’t stand on her own two legs?",
     hint: "This goes on your certificate. Choose wisely.",
     placeholder: "Say yes to the pillow, say no to the stairs",
     required: true,
-    confetti: true,
     spotlight: true,
     song: ["call it a comeback,", "call it a limp"],
+  },
+  {
+    number: 13,
+    kind: "closing",
+    type: "confirm",
+    emoji: "🐒",
+    question: "See? Talking to yourself already.",
+    hint: "Don’t take rest. Rest is already scared of you.",
+    cta: "JUST RUNNNNN",
+    confirmedLabel: "oh. You can’t.",
+    confetti: true,
+    song: ["rest is scared of you,", "and so are the stairs"],
   },
 ];
 
@@ -252,11 +275,14 @@ export function getStep(n: number): Step | undefined {
   return STEPS.find((s) => s.number === n);
 }
 
-/** Steps whose answers are quoted on the certificate. */
-export const SPOTLIGHT_STEPS = STEPS.filter((s) => s.spotlight).map((s) => s.number);
-
 /** The step that doubles as the visitor's name field. */
 export const NAME_STEP = 1;
+
+/** The step quoted as the big pull-quote on the certificate. */
+export const ADVICE_STEP = 12;
+
+/** Steps whose answers are quoted on the certificate. */
+export const SPOTLIGHT_STEPS = STEPS.filter((s) => s.spotlight).map((s) => s.number);
 
 /**
  * A pale tint per step, cycled, so consecutive screens feel distinct. Shared
@@ -271,17 +297,18 @@ export function tintFor(stepNumber: number): (typeof TINTS)[number] {
 /** Short labels for the admin table and certificate, so long questions don't wreck layout. */
 export const SHORT_LABELS: Record<number, string> = {
   1: "Name",
-  2: "Pain level",
-  3: "Friend who got there first",
-  4: "What friends call them",
-  5: "Funniest thing a friend said",
-  6: "Who panicked hardest",
-  7: "The family dish",
+  2: "Is the brain working",
+  3: "Pain level",
+  4: "Friend with worse legs",
+  5: "Guesses at the nickname",
+  6: "Funniest thing a friend said",
+  7: "Do painkillers work",
   8: "Times they said “I’m fine”",
-  9: "Who put the sock on",
+  9: "How to run",
   10: "Best thing this week",
   11: "Song on repeat",
   12: "Advice for the next soul",
+  13: "Told to run",
 };
 
 export function labelFor(stepNumber: number): string {

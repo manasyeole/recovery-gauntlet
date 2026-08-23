@@ -4,7 +4,7 @@ A snapshot of the design system as it exists in code. Paste this into an AI and
 ask for suggestions; every value below is real and greppable.
 
 **What it is:** a private joke site for a friend recovering from leg surgery.
-12 questions, one per screen, ending in a downloadable "Certificate of
+13 questions, one per screen, ending in a downloadable "Certificate of
 Successful Suffering". Plus a password-gated admin page to read the answers.
 
 **Stack:** Next.js 15 App Router · React 19 · Tailwind 3.4 · TypeScript ·
@@ -142,16 +142,21 @@ and on flagged steps, three-shot big burst on the certificate.
 
 ## 7. Screens
 
-**`/` — landing** (`app/page.tsx`). Deliberately bare: a 🦵 emoji at `text-5xl`,
-a `text-[2.5rem]` headline whose punchline ("and lost.") is the accent color,
-one muted line of body, the name field + "Begin" button inline, and a muted
-days-until-follow-up line, over the song-line background. No nav, no feature
-grid, no footer.
+**`/` — cover** (`app/page.tsx`). One line and one way in: a 🦵 emoji at
+`text-5xl`, then **"END is the beginning"** at `text-[2.5rem]`, centred, where
+the word *beginning* is itself the link to `/gauntlet` — clay-500, underlined
+in `clay-300` at `decoration-[3px]` with `underline-offset-[6px]`, and a 44px
+tap target. Below it one muted line of instruction and the days-until-follow-up
+counter, over the song-line background. No nav, no name field, no footer.
+
+The name is collected at step 1 instead, so `StartForm` is no longer mounted
+anywhere — it is still in the tree if the landing ever wants a name field and a
+start-over button back.
 
 **`/gauntlet` — the wizard** (`GauntletWizard` + `StepCard`). One question per
 screen, `max-w-xl` centered.
 
-- `ProgressBar` on top: `n / 12` in muted tabular-nums above a 1.5px `--line`
+- `ProgressBar` on top: `n / 13` in muted tabular-nums above a 1.5px `--line`
   track with a `clay-500` fill.
 - `StepCard`: tinted `h-14 w-14` rounded-square emoji tile → question `h2` →
   optional muted hint → the input → footer row with `Back` (btn-quiet,
@@ -163,15 +168,16 @@ screen, `max-w-xl` centered.
   ignored on sliders and text inputs). Progress and answers persist to
   localStorage, so the run resumes where it left off.
 
-**8 input types**, each its own component in `components/inputs/`:
+**9 input types**, each its own component in `components/inputs/`:
 
 | Type | UI |
 |---|---|
 | `text` / `longtext` | `.field` input / 4-row textarea. Enter submits (Shift+Enter = newline). Autofocus on `pointer: fine` only — never on touch, so the keyboard cannot hide the question. |
 | `number` | `−` / `+` 56px square buttons flanking a centered `text-3xl` display-font input, clamped to min/max |
 | `slider` | Huge `text-6xl` clay-500 value above the custom range, min/max labels beneath; seeds itself to the midpoint |
-| `choice` | Stacked `.choice` rows with a 20px circular check that fills clay-500 when selected; `role="radiogroup"`. A step carrying `reveal` skips the auto-advance and pops a `clay-50` punchline panel instead, keeping its Continue button |
-| `yesno` | Two `py-7` display-font buttons in a 2-col grid |
+| `choice` | Stacked `.choice` rows with a 20px circular check that fills clay-500 when selected; `role="radiogroup"`. A step carrying `reveal` skips the auto-advance and pops a `clay-50` punchline panel instead, keeping its Continue button. `forceAnswer` records and highlights a fixed option whichever one they tap — the lie is the joke |
+| `yesno` | Two `py-7` display-font buttons in a 2-col grid. Honours `reveal` and `forceAnswer` as `choice` does |
+| `guesses` | N `.field` inputs (default 3), Enter walking down them, with the `reveal` panel appearing — and Continue unblocking — only once every box is filled |
 | `confirm` | One full-width `py-5 text-lg` primary button → "Logged ✓" with `bounce-check` |
 | `hold` | 176px circle, `conic-gradient(clay-500 …deg, line 0)` ring driven by rAF off wall-clock time, live countdown in the center, 🧘 on success. Letting go early resets to zero and nudges "You let go. Back to zero." |
 

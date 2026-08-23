@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useConfetti } from "./Confetti";
 import { certificateSerial, pickDiagnosis, pickPrognosis } from "@/lib/diagnoses";
 import { SITE_CONFIG } from "@/lib/config";
-import { SPOTLIGHT_STEPS, TOTAL_STEPS, labelFor } from "@/lib/steps";
+import { ADVICE_STEP, SPOTLIGHT_STEPS, TOTAL_STEPS, labelFor } from "@/lib/steps";
 import { getAnswers, getSessionId, getVisitorName, resetRun } from "@/lib/client";
 
 interface Quote {
@@ -33,10 +33,10 @@ export default function Certificate() {
 
     setName(getVisitorName() || stored["1"]?.answer || SITE_CONFIG.friendName);
     setSeed(getSessionId() || "recovery");
-    setAdvice(stored[String(TOTAL_STEPS)]?.answer?.trim() ?? "");
+    setAdvice(stored[String(ADVICE_STEP)]?.answer?.trim() ?? "");
 
     setQuotes(
-      SPOTLIGHT_STEPS.filter((n) => n !== TOTAL_STEPS)
+      SPOTLIGHT_STEPS.filter((n) => n !== ADVICE_STEP)
         .map((n) => stored[String(n)])
         .filter((a) => a && !SKIPPED.has(a.answer.trim()))
         .slice(0, 3)

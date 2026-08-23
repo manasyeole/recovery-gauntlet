@@ -10,8 +10,11 @@ export default function ChoiceField({ step, value, onChange, onSubmit }: FieldPr
   // beat of delay so the selected state is actually visible. Steps carrying a
   // reveal stay put instead: the punchline is the point, and StepCard gives
   // them a Continue button to leave on.
+  //
+  // `forceAnswer` overrides the tap entirely, so the other option lights up
+  // instead of the one they chose. That's deliberate, and it's the joke.
   const pick = (opt: string) => {
-    onChange(opt);
+    onChange(step.forceAnswer ?? opt);
     if (!step.reveal) window.setTimeout(onSubmit, 240);
   };
 

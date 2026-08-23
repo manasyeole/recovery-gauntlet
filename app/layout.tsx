@@ -8,7 +8,7 @@ import { SITE_CONFIG } from "@/lib/config";
 // const display = Baloo_2({ subsets: ["latin"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: `${SITE_CONFIG.copy.title} — 12 steps to your Certificate of Recovery`,
+  title: `${SITE_CONFIG.copy.title} — 13 steps to your Certificate of Recovery`,
   description: SITE_CONFIG.copy.tagline,
   openGraph: {
     title: SITE_CONFIG.copy.title,

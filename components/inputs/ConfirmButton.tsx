@@ -19,7 +19,9 @@ export default function ConfirmButton({ step, value, onChange, onSubmit }: Field
       className="btn-primary w-full py-5 text-lg"
     >
       {done ? (
-        <span className="inline-flex animate-bounce-check items-center gap-2">Logged ✓</span>
+        <span className="inline-flex animate-bounce-check items-center gap-2">
+          {step.confirmedLabel ?? "Logged ✓"}
+        </span>
       ) : (
         (step.cta ?? "I did it")
       )}

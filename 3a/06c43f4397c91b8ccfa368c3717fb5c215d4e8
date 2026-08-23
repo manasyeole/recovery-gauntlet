@@ -1,0 +1,69 @@
+app/layout.tsx
+  s_93c98bcb5e3166::t_599e42b2cd34e7 25-26
+components/inputs/HoldButton.tsx
+  s_93c98bcb5e3166::t_edb97b68b5989e 33,38,85-86,88,91,97-98,104-108
+lib/steps.ts
+  s_383edcfad16d60::t_d2c025d486fdf1 67,104,214
+tailwind.config.ts
+  s_93c98bcb5e3166::t_daab9c75eb798a 26-29
+  s_93c98bcb5e3166::t_bf858716a7edaf 3-7,9,13-24,33,36,39-40,44-45,47-50,52-55,59-61
+  s_93c98bcb5e3166::t_0da2ab6e31325a 25
+components/inputs/ChoiceField.tsx
+  s_93c98bcb5e3166::t_8342e502a285a5 13,24,36-37,50-51,54
+app/globals.css
+  s_93c98bcb5e3166::t_69a2b50d0996bd 5-8,10-11,14-15,18-34,43-44,51,57,71,75,84,86-92,95,97-103,107-108,110-115,119-120,126-127,131-132,142,147,151,160-161,164-165,170,176,178,182-183,186
+components/inputs/SliderField.tsx
+  s_93c98bcb5e3166::t_206f943ce7af92 11-12,19-22,32-33,36-37
+app/page.tsx
+  s_93c98bcb5e3166::t_e0d5e4aae1a759 14-22,25-26,29,33-35
+app/admin/login/page.tsx
+  s_93c98bcb5e3166::t_9a6f0b704b5ecd 44,64
+components/Certificate.tsx
+  s_93c98bcb5e3166::t_c7abc38757e884 38-44,47,71,93,96,102,105-123,125-126,129-150,153,155,157-158,166,168,173
+  s_93c98bcb5e3166::t_daab9c75eb798a 124
+components/AdminToolbar.tsx
+  s_93c98bcb5e3166::t_9a6f0b704b5ecd 62,66,69
+components/inputs/ConfirmButton.tsx
+  s_93c98bcb5e3166::t_3be1d8462c0030 6,11-26
+components/StartForm.tsx
+  s_93c98bcb5e3166::t_2cea39fabfbe60 5,7,27,34,40,46,49-54,56
+components/inputs/TextField.tsx
+  s_93c98bcb5e3166::t_b19ecd56acdc75 11-13,26-41,43-56
+components/StepCard.tsx
+  s_93c98bcb5e3166::t_daab9c75eb798a 27
+  s_93c98bcb5e3166::t_ad3c96e5d68d06 23,26,28,48-49,54,57-62,64-71,73,77-85,88-93
+components/ProgressBar.tsx
+  s_93c98bcb5e3166::t_47a15d9b6bb640 5-8,11,13-16,18,26-27
+components/GauntletWizard.tsx
+  s_93c98bcb5e3166::t_06b9e1d0d32987 157,162,166-167,171
+components/Countdown.tsx
+  s_93c98bcb5e3166::t_1d362db0f5069c 7-8,20-26
+components/inputs/NumberField.tsx
+  s_93c98bcb5e3166::t_0d77b9e3fcdf7b 10-11,14-49
+app/admin/page.tsx
+  s_93c98bcb5e3166::t_9a6f0b704b5ecd 84-85,106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3a06c43f4397c91b8ccfa368c3717fb5c215d4e8",
+  "prompts": {},
+  "sessions": {
+    "s_383edcfad16d60": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a3e20e06-746a-4a21-a1c0-951514c53f07",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    },
+    "s_93c98bcb5e3166": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28ed3d37-7ae4-46cf-8b9a-5960d8fe6a62",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+app/page.tsx
+  s_383edcfad16d60::t_160cac0e287795 1,6,11-12,17-23,26
+lib/steps.ts
+  s_383edcfad16d60::t_cfeb1fc758fb24 2,7,25,46-48,51-57,66-67,88-89,97,99-111,115,120-123,125-126,129-131,134-135,138-140,143,145,148-149,157,170,177-179,183,201,206,208-210,212,214,222,247,254-265,281-286,300-305,307,311
+components/inputs/ChoiceField.tsx
+  s_383edcfad16d60::t_97b733b4f084fd 13-15,17
+components/StepCard.tsx
+  s_383edcfad16d60::t_1aad735d5190dd 6,20,51-54
+components/inputs/GuessField.tsx
+  s_383edcfad16d60::t_1aad735d5190dd 1-74
+DESIGN.md
+  s_383edcfad16d60::t_32ce8403b793a3 7,145-154,159,171,178-180
+app/admin/page.tsx
+  s_383edcfad16d60::t_aea08d6975ae97 77,97
+app/gauntlet/page.tsx
+  s_383edcfad16d60::t_64fd47a3ba4ddd 3
+app/layout.tsx
+  s_383edcfad16d60::t_53833b1cc6136d 11
+components/Certificate.tsx
+  s_383edcfad16d60::t_90f65d40d38a13 7,36,39
+components/inputs/ConfirmButton.tsx
+  s_383edcfad16d60::t_8cf54c3f922a95 22-24
+lib/config.ts
+  s_383edcfad16d60::t_ac768702365307 20,24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a1b1f5c4a4f8c0d22418e198d8967aa9d3dadc06",
+  "prompts": {},
+  "sessions": {
+    "s_383edcfad16d60": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a3e20e06-746a-4a21-a1c0-951514c53f07",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

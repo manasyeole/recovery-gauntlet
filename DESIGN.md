@@ -4,12 +4,13 @@ A snapshot of the design system as it exists in code. Paste this into an AI and
 ask for suggestions; every value below is real and greppable.
 
 **What it is:** a private joke site for a friend recovering from leg surgery.
-13 questions, one per screen, ending in a downloadable "Certificate of
-Successful Suffering". Plus a password-gated admin page to read the answers.
+13 questions, one per screen, ending in a wall of every sport she is not
+doing this month. Plus a password-gated admin page to read the answers.
 
 **Stack:** Next.js 15 App Router · React 19 · Tailwind 3.4 · TypeScript ·
-Prisma/Postgres · `canvas-confetti` · `html-to-image`. No UI library, no icon
-library, no webfont (system fonts only, by choice).
+Prisma/Postgres · `canvas-confetti`. No UI library, no icon library, no webfont
+(system fonts only, by choice). `html-to-image` is still in `package.json` but
+nothing imports it since the certificate went.
 
 ---
 
@@ -181,15 +182,18 @@ screen, `max-w-xl` centered.
 | `confirm` | One full-width `py-5 text-lg` primary button → "Logged ✓" with `bounce-check` |
 | `hold` | 176px circle, `conic-gradient(clay-500 …deg, line 0)` ring driven by rAF off wall-clock time, live countdown in the center, 🧘 on success. Letting go early resets to zero and nudges "You let go. Back to zero." |
 
-**`/results` — the certificate** (`Certificate.tsx`). A single white
-`rounded-chunk` card designed to be exported as a PNG: `tracking-[0.3em]`
-uppercase clay eyebrow → name at `text-4xl` → two stacked tinted panels
-(Diagnosis on `clay-50`, Prognosis on `sage`) → an italic pull-quote with a 2px
-`clay-300` left rule → up to 3 quoted answers above a `border-line` rule →
-date + serial footer. Below the card: Download (primary), Share and Start over
-(quiet), plus a transient toast in `clay-600`. Export via `html-to-image` at
-`pixelRatio: 2` on `#ffffff`; Share uses the Web Share API with a clipboard
-fallback.
+**`/results` — the finish line** (`FinishLine.tsx`). No certificate: an
+`tracking-[0.3em]` uppercase clay eyebrow, the visitor's name in a `text-4xl`
+headline, then a 3-col (`sm:` 4-col) grid of twelve `aspect-square` `.card`
+tiles, each holding one sport emoji at `text-4xl`/`sm:text-5xl`, tilted on a
+cycled `[-6, 4, -3, 7, -5, 2]` degree rotation and staggered in at 45ms
+intervals via inline `animationDelay`. Every tile is a labelled
+`role="img"` — they are content here, not decoration. Closes with two lines of
+copy, a "Go again" primary and a quiet link back. Big confetti burst on mount.
+
+Emoji rather than photographs is a constraint, not a preference: there is no
+`public/` directory and no image assets in the repo. Real photos would need
+files added and licensed.
 
 **`/admin` and `/admin/login`** — same tokens, denser. `max-w-5xl`, a 2→4 column
 grid of `rounded-2xl` stat cards, a filter/export/logout toolbar of `!py-2
@@ -224,8 +228,9 @@ Honest list, so suggestions can target real gaps.
 5. **The landing page is still sparse** — the song-line background gives it
    atmosphere, but there is no preview of what the 12 steps hold, no footer,
    nothing below the fold.
-6. **The certificate is not print- or social-shaped.** It is a portrait web card
-   exported at 2×; no fixed aspect ratio, no OG image, no landscape variant.
+6. **Nothing is shareable any more.** The certificate carried the only export
+   path (PNG at 2×) and the only Share button; the finish line has neither, and
+   there is still no OG image.
 7. **Emoji is the only illustration.** Cross-platform rendering varies and there
    is no fallback if a glyph is missing.
 8. **No page transitions** between wizard steps — the card `pop-in`s and the

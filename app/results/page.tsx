@@ -1,16 +1,16 @@
-import Certificate from "@/components/Certificate";
+import FinishLine from "@/components/FinishLine";
 import SongLines from "@/components/SongLines";
-import { CERTIFICATE_SONG } from "@/lib/steps";
+import { FINISH_SONG } from "@/lib/steps";
 
-export const metadata = { title: "Certificate of Successful Suffering" };
+export const metadata = { title: "The world is still running" };
 
 export default function ResultsPage() {
   return (
     <main className="screen relative flex flex-col items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
-      <SongLines lines={CERTIFICATE_SONG} tint="bg-tint-butter" />
+      <SongLines lines={FINISH_SONG} tint="bg-tint-butter" />
 
       <div className="relative z-10 flex w-full flex-col items-center">
-        <Certificate />
+        <FinishLine />
       </div>
     </main>
   );

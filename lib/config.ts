@@ -21,7 +21,7 @@ export const SITE_CONFIG = {
 
   copy: {
     title: "The Recovery Gauntlet",
-    tagline: "13 steps between you and your Certificate of Successful Suffering.",
+    tagline: "13 steps between you and the finish line.",
     subhead: "How did you even manage this.",
     startCta: "Start the Gauntlet",
   },

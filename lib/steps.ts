@@ -2,7 +2,7 @@
  * THE 13 STEPS
  * ============
  * This array is the whole gauntlet. Edit the copy freely — the wizard,
- * progress bar, API and certificate all read from here.
+ * progress bar, API and closing screen all read from here.
  *
  * Four steps are marked `yourTurn: true` (4, 5, 7, 9). These are the
  * personalisation slots — they land fine as-is, but they get sharper with a
@@ -11,7 +11,7 @@
  * NOTE: `hint` renders on screen, under the question. Author notes belong in
  * comments, never in `hint` — a stray note there is visible to the visitor.
  *
- * `spotlight: true` marks answers worth quoting on the certificate screen.
+ * `spotlight: true` is kept for a future recap screen; nothing reads it now.
  * `song` is the decorative couplet drawn behind the card (see SongLines).
  */
 
@@ -71,7 +71,7 @@ export interface Step {
   required?: boolean;
   /** Fire confetti when they complete this step. */
   confetti?: boolean;
-  /** Quote this answer on the certificate. */
+  /** Reserved for a recap screen. Currently unused. */
   spotlight?: boolean;
   /** Replace this one with your own material. */
   yourTurn?: boolean;
@@ -233,7 +233,7 @@ export const STEPS: Step[] = [
     type: "text",
     emoji: "🎧",
     question: "What song have you had on repeat since it happened?",
-    hint: "This one goes on the certificate. Pick something you would defend.",
+    hint: "This one is going in the permanent record. Pick something you would defend.",
     placeholder: "The loud one, obviously",
     required: true,
     spotlight: true,
@@ -245,7 +245,7 @@ export const STEPS: Step[] = [
     type: "text",
     emoji: "🎓",
     question: "One line of advice for the next unlucky soul who can’t stand on her own two legs?",
-    hint: "This goes on your certificate. Choose wisely.",
+    hint: "This is the one they will read back to you. Choose wisely.",
     placeholder: "Say yes to the pillow, say no to the stairs",
     required: true,
     spotlight: true,
@@ -269,7 +269,7 @@ export const TOTAL_STEPS = STEPS.length;
 
 /** Decorative couplets for the screens that aren't a step. */
 export const LANDING_SONG: SongLine = ["and the leg said no,", "but the heart said one more"];
-export const CERTIFICATE_SONG: SongLine = ["six weeks of ceiling,", "one week of sky"];
+export const FINISH_SONG: SongLine = ["the world went running", "and left the door open"];
 
 export function getStep(n: number): Step | undefined {
   return STEPS.find((s) => s.number === n);
@@ -278,10 +278,10 @@ export function getStep(n: number): Step | undefined {
 /** The step that doubles as the visitor's name field. */
 export const NAME_STEP = 1;
 
-/** The step quoted as the big pull-quote on the certificate. */
+/** The advice step. Kept for a future recap screen. */
 export const ADVICE_STEP = 12;
 
-/** Steps whose answers are quoted on the certificate. */
+/** Steps flagged as quotable. Kept for a future recap screen. */
 export const SPOTLIGHT_STEPS = STEPS.filter((s) => s.spotlight).map((s) => s.number);
 
 /**
@@ -294,7 +294,7 @@ export function tintFor(stepNumber: number): (typeof TINTS)[number] {
   return TINTS[(stepNumber - 1) % TINTS.length];
 }
 
-/** Short labels for the admin table and certificate, so long questions don't wreck layout. */
+/** Short labels for the admin table, so long questions don't wreck layout. */
 export const SHORT_LABELS: Record<number, string> = {
   1: "Name",
   2: "Is the brain working",

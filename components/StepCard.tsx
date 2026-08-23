@@ -93,7 +93,7 @@ export default function StepCard({
 
           {!selfAdvancing && (
             <button type="button" onClick={onSubmit} disabled={blocked} className="btn-primary">
-              {saving ? "Saving" : isLast ? "Get my certificate" : "Continue"}
+              {saving ? "Saving" : isLast ? "Finish" : "Continue"}
             </button>
           )}
         </div>

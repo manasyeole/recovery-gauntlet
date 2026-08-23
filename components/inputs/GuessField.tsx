@@ -20,7 +20,7 @@ export function guessesComplete(step: { guessCount?: number }, value: string): b
  * design — see `reveal` on the step.
  *
  * The whole set is stored as one separator-joined string, so it still reads
- * fine in the admin table and on the certificate.
+ * fine in the admin table.
  */
 export default function GuessField({ step, value, onChange, onSubmit }: FieldProps) {
   const count = step.guessCount ?? 3;

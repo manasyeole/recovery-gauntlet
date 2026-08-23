@@ -2,14 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getVisitorName, setVisitorName, answeredCount, resetRun } from "@/lib/client";
+import { answeredCount, getVisitorName, resetRun, setVisitorName } from "@/lib/client";
 
-interface Props {
-  /** Name from ?name= — pre-fills the field. */
-  initialName?: string;
-}
-
-export default function StartForm({ initialName = "" }: Props) {
+export default function StartForm({ initialName = "" }: { initialName?: string }) {
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [inProgress, setInProgress] = useState(0);
@@ -28,45 +23,38 @@ export default function StartForm({ initialName = "" }: Props) {
     router.push(clean ? `/gauntlet?name=${encodeURIComponent(clean)}` : "/gauntlet");
   };
 
-  const startOver = () => {
-    resetRun();
-    setInProgress(0);
-    router.push("/gauntlet");
-  };
-
   return (
-    <div className="w-full max-w-md space-y-3">
+    <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && start()}
-          placeholder="Your name, patient zero"
+          placeholder="Your name"
           aria-label="Your name"
           maxLength={80}
           className="field sm:flex-1"
         />
         <button type="button" onClick={start} className="btn-primary shrink-0">
-          Start the Gauntlet <span aria-hidden>→</span>
+          Begin
         </button>
       </div>
 
       {inProgress > 0 && (
         <p className="muted text-sm">
-          You&apos;re {inProgress}/20 in already.{" "}
-          <button type="button" onClick={start} className="font-semibold text-accent-600 underline">
-            Pick up where you left off
-          </button>{" "}
-          or{" "}
+          {inProgress} of 20 answered.{" "}
           <button
             type="button"
-            onClick={startOver}
-            className="font-semibold text-accent-600 underline"
+            onClick={() => {
+              resetRun();
+              setInProgress(0);
+              router.push("/gauntlet");
+            }}
+            className="font-semibold text-clay-600 underline"
           >
-            start over
+            Start over
           </button>
-          .
         </p>
       )}
     </div>

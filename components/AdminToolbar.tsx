@@ -59,14 +59,14 @@ export default function AdminToolbar({ q, since }: { q: string; since: string })
         Filter
       </button>
       {(q || since) && (
-        <button type="button" onClick={clear} className="btn-ghost muted !px-3 !py-2 !text-sm">
+        <button type="button" onClick={clear} className="btn-quiet !px-3 !py-2 !text-sm">
           Clear
         </button>
       )}
-      <a href={exportHref} className="btn-ghost card !px-3 !py-2 !text-sm" download>
+      <a href={exportHref} className="btn-quiet !px-3 !py-2 !text-sm" download>
         JSON
       </a>
-      <button type="button" onClick={logout} className="btn-ghost muted !px-3 !py-2 !text-sm">
+      <button type="button" onClick={logout} className="btn-quiet !px-3 !py-2 !text-sm">
         Log out
       </button>
     </form>

@@ -41,7 +41,7 @@ function LoginForm() {
   };
 
   return (
-    <form onSubmit={submit} className="card w-full max-w-sm rounded-chunk p-7 shadow-chunk">
+    <form onSubmit={submit} className="card w-full max-w-sm rounded-chunk p-7 shadow-soft">
       <h1 className="font-display text-2xl font-extrabold">
         <span aria-hidden className="mr-2">
           🔐
@@ -61,7 +61,7 @@ function LoginForm() {
         className="field mt-5"
       />
 
-      {error && <p className="mt-3 text-sm font-medium text-accent-600">{error}</p>}
+      {error && <p className="mt-3 text-sm font-medium text-clay-600">{error}</p>}
 
       <button type="submit" disabled={busy || !password} className="btn-primary mt-5 w-full">
         {busy ? "Checking…" : "Let me in"}

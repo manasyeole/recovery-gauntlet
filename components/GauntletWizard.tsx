@@ -154,25 +154,21 @@ export default function GauntletWizard({ initialName = "" }: { initialName?: str
   /* ------------------------------- render -------------------------------- */
 
   if (!hydrated) {
-    return (
-      <div className="screen grid place-items-center px-5">
-        <p className="muted animate-pulse text-sm">Warming up the gauntlet…</p>
-      </div>
-    );
+    return <div className="screen" />;
   }
 
   return (
     <main
-      className="screen px-4 py-6 sm:px-6 sm:py-10"
+      className="screen px-4 py-8 sm:px-6 sm:py-12"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <div className="mx-auto w-full max-w-2xl">
-        <div className="mb-6">
+      <div className="mx-auto w-full max-w-xl">
+        <div className="mb-7">
           <ProgressBar current={step} />
         </div>
 
-        <div className={shake ? "animate-wiggle" : undefined}>
+        <div className={shake ? "animate-nudge" : undefined}>
           <StepCard
             step={current}
             value={value}
@@ -184,12 +180,6 @@ export default function GauntletWizard({ initialName = "" }: { initialName?: str
             saving={saving}
           />
         </div>
-
-        <p className="muted mt-5 text-center text-xs leading-relaxed">
-          Every answer saves as you go — close the tab and come back whenever.
-          <span className="hidden sm:inline"> Arrow keys work too.</span>
-          <span className="sm:hidden"> Swipe to move.</span>
-        </p>
       </div>
     </main>
   );

@@ -2,8 +2,6 @@
 
 import type { FieldProps } from "./types";
 
-const LETTERS = "ABCDEFGH";
-
 /** Handles both `choice` (list) and `yesno` (two big buttons). */
 export default function ChoiceField({ step, value, onChange, onSubmit }: FieldProps) {
   const options = step.type === "yesno" ? ["Yes", "No"] : (step.options ?? []);
@@ -12,7 +10,7 @@ export default function ChoiceField({ step, value, onChange, onSubmit }: FieldPr
   // beat of delay so the selected state is actually visible.
   const pick = (opt: string) => {
     onChange(opt);
-    window.setTimeout(onSubmit, 260);
+    window.setTimeout(onSubmit, 240);
   };
 
   if (step.type === "yesno") {
@@ -23,14 +21,10 @@ export default function ChoiceField({ step, value, onChange, onSubmit }: FieldPr
             key={opt}
             type="button"
             onClick={() => pick(opt)}
-            className={`tap rounded-chunk border px-4 py-7 text-xl font-bold transition active:scale-[0.98] ${
+            className={`tap rounded-chunk border border-line bg-card py-7 font-display text-xl font-bold transition active:scale-[0.98] hover:border-clay-300 hover:bg-clay-50 ${
               value === opt ? "choice-selected" : ""
             }`}
-            style={{ borderColor: "var(--line)", background: "var(--card)" }}
           >
-            <span className="mr-2 text-2xl" aria-hidden>
-              {opt === "Yes" ? "🙋" : "🙅"}
-            </span>
             {opt}
           </button>
         ))}
@@ -39,12 +33,8 @@ export default function ChoiceField({ step, value, onChange, onSubmit }: FieldPr
   }
 
   return (
-    <div
-      className="grid gap-2.5 md:grid-cols-2"
-      role="radiogroup"
-      aria-label={step.question}
-    >
-      {options.map((opt, i) => {
+    <div className="grid gap-2.5" role="radiogroup" aria-label={step.question}>
+      {options.map((opt) => {
         const selected = value === opt;
         return (
           <button
@@ -57,13 +47,11 @@ export default function ChoiceField({ step, value, onChange, onSubmit }: FieldPr
           >
             <span
               aria-hidden
-              className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
-                selected
-                  ? "bg-accent-600 text-white"
-                  : "bg-black/5 text-current dark:bg-white/10"
+              className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 text-[10px] text-white transition ${
+                selected ? "border-clay-500 bg-clay-500" : "border-line"
               }`}
             >
-              {selected ? "✓" : LETTERS[i]}
+              {selected ? "✓" : ""}
             </span>
             <span className="leading-snug">{opt}</span>
           </button>

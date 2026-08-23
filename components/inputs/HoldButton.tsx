@@ -30,13 +30,12 @@ export default function HoldButton({ step, value, onChange, onSubmit }: FieldPro
     setProgress(1);
     setDone(true);
     onChange(`Held still for ${seconds}s`);
-    window.setTimeout(onSubmit, 700);
+    window.setTimeout(onSubmit, 650);
   }, [onChange, onSubmit, seconds, stopLoop]);
 
   const tick = useCallback(() => {
     if (startedAt.current === null) return;
-    const elapsed = (performance.now() - startedAt.current) / 1000;
-    const p = Math.min(elapsed / seconds, 1);
+    const p = Math.min((performance.now() - startedAt.current) / 1000 / seconds, 1);
     setProgress(p);
     if (p >= 1) {
       finish();
@@ -61,8 +60,6 @@ export default function HoldButton({ step, value, onChange, onSubmit }: FieldPro
 
   useEffect(() => stopLoop, [stopLoop]);
 
-  const remaining = Math.max(0, seconds - progress * seconds);
-
   return (
     <div className="flex flex-col items-center gap-4">
       <button
@@ -85,41 +82,30 @@ export default function HoldButton({ step, value, onChange, onSubmit }: FieldPro
         onKeyUp={(e) => {
           if (e.key === " " || e.key === "Enter") release();
         }}
-        aria-label={`${step.cta ?? "Hold"} for ${seconds} seconds`}
-        className="relative grid h-40 w-40 select-none touch-none place-items-center rounded-full border-4 text-center transition disabled:opacity-100 sm:h-48 sm:w-48"
+        aria-label={`Hold for ${seconds} seconds`}
+        className="grid h-44 w-44 select-none touch-none place-items-center rounded-full transition disabled:opacity-100"
         style={{
-          borderColor: done ? "#16a34a" : "var(--line)",
-          background: `conic-gradient(theme(colors.accent.500) ${progress * 360}deg, var(--card) 0deg)`,
+          background: `conic-gradient(var(--clay-500) ${progress * 360}deg, var(--line) 0deg)`,
         }}
       >
-        <span
-          className="grid h-[calc(100%-1.25rem)] w-[calc(100%-1.25rem)] place-items-center rounded-full px-3"
-          style={{ background: "var(--card)" }}
-        >
+        <span className="grid h-[10.5rem] w-[10.5rem] place-items-center rounded-full bg-card">
           {done ? (
             <span className="animate-bounce-check text-4xl" aria-hidden>
               🧘
             </span>
           ) : (
-            <span className="font-display text-2xl font-extrabold tabular-nums">
-              {progress > 0 ? remaining.toFixed(1) : (step.cta ?? "Hold")}
+            <span className="font-display text-2xl font-bold tabular-nums">
+              {progress > 0 ? (seconds - progress * seconds).toFixed(1) : "Hold"}
             </span>
           )}
         </span>
       </button>
 
-      <p
-        className={`text-center text-sm ${bailed ? "font-semibold text-accent-600 animate-wiggle" : "muted"}`}
-        role="status"
-      >
-        {done
-          ? "Verified. You are officially resting."
-          : bailed
-            ? "You let go. Back to zero. Discipline, please."
-            : progress > 0
-              ? "Don't you dare let go."
-              : `Press and hold for ${seconds} seconds.`}
-      </p>
+      {bailed && !done && (
+        <p className="animate-nudge text-sm font-semibold text-clay-600" role="status">
+          You let go. Back to zero.
+        </p>
+      )}
     </div>
   );
 }

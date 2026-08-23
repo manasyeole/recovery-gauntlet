@@ -64,7 +64,7 @@ export const STEPS: Step[] = [
     type: "text",
     emoji: "🦵",
     question:
-      "So. You tried to be an action hero and lost. Welcome to The Gauntlet — 20 steps stand between you and your Certificate of Recovery. Type your name to begin.",
+      "First things first — what should we call you?",
     hint: "Real name preferred. Nicknames will be used against you later.",
     placeholder: "Your name, survivor",
     required: true,
@@ -101,7 +101,7 @@ export const STEPS: Step[] = [
     type: "confirm",
     emoji: "😩",
     question:
-      "Say 'ouch' out loud right now, as dramatically as possible. Tap below once you've done it. We will know if you're lying.",
+      "Say 'ouch' out loud right now, as dramatically as possible. We will know if you're lying.",
     hint: "If someone else is in the room, even better.",
     cta: "I did it (I'm not lying)",
     confetti: true,
@@ -211,8 +211,7 @@ export const STEPS: Step[] = [
     type: "hold",
     emoji: "🤫",
     question:
-      "Hold perfectly still and silent for 5 seconds to 'prove' you're resting. Press and hold the button the whole time.",
-    hint: "Let go early and we start over. Rules are rules.",
+      "Hold perfectly still and silent for 5 seconds to 'prove' you're resting.",
     cta: "Hold to rest",
     holdSeconds: 5,
     confetti: true,

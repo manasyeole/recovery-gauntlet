@@ -2,29 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * One committed light palette — no dark inversion. Warm paper background,
+ * white cards, soft clay accent, and three pale tints for shaded panels.
+ */
 :root {
-  /* Swap these for next/font variables if you want webfonts (see layout.tsx). */
-  --font-display: "Baloo 2", ui-rounded, "Segoe UI Rounded", "Hiragino Maru Gothic ProN",
-    system-ui, sans-serif;
+  --font-display: ui-rounded, "Segoe UI Rounded", "Hiragino Maru Gothic ProN", system-ui,
+    sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
-  --page: #fffaf5;
-  --page-2: #fff1f2;
+  --paper: #fbf7f2;
+  --paper-tint: #f7efe8;
   --card: #ffffff;
-  --text: #1c1917;
-  --muted: #78716c;
-  --line: #e7e5e4;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page: #14100f;
-    --page-2: #1c1412;
-    --card: #221b19;
-    --text: #f5f5f4;
-    --muted: #a8a29e;
-    --line: #3a302d;
-  }
+  --ink: #2a2422;
+  --ink-soft: #6f645e;
+  --line: #ece4dc;
+
+  --clay-50: #fdf3f0;
+  --clay-100: #f9e4de;
+  --clay-300: #efab9b;
+  --clay-500: #dc6b52;
+  --clay-600: #c55440;
+
+  /* Pale tints for shaded panels — used sparingly, one per surface. */
+  --tint-sage: #f1f5ef;
+  --tint-sky: #eef3f7;
+  --tint-butter: #fbf5e8;
+
+  --shadow-soft: 0 1px 2px rgb(42 36 34 / 0.04), 0 8px 24px -8px rgb(42 36 34 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(42 36 34 / 0.05), 0 18px 40px -14px rgb(42 36 34 / 0.16);
 }
 
 @layer base {
@@ -33,33 +40,27 @@
   }
 
   body {
-    background:
-      radial-gradient(1200px 600px at 80% -10%, var(--page-2), transparent 70%),
-      var(--page);
-    color: var(--text);
+    background: var(--paper);
+    color: var(--ink);
     font-family: var(--font-body);
-    /* Stop iOS from zooming when focusing inputs. */
     -webkit-text-size-adjust: 100%;
   }
 
   h1,
   h2,
-  h3,
-  .font-display {
+  h3 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
 
-  /* Visible focus ring for keyboard users on the big tappable choices. */
   :focus-visible {
-    outline: 3px solid theme("colors.accent.500");
+    outline: 2.5px solid var(--clay-500);
     outline-offset: 3px;
     border-radius: 0.75rem;
   }
 }
 
 @layer components {
-  /* Full-height that behaves under mobile browser chrome. */
   .screen {
     min-height: 100dvh;
   }
@@ -67,10 +68,11 @@
   .card {
     background: var(--card);
     border: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
   }
 
   .muted {
-    color: var(--muted);
+    color: var(--ink-soft);
   }
 
   /* Minimum 44px tap targets — the audience is one-handed on a couch. */
@@ -79,47 +81,55 @@
   }
 
   .btn-primary {
-    @apply tap inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 px-6 py-3
+    @apply tap inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5
       text-base font-semibold text-white transition
-      hover:bg-accent-700 active:scale-[0.98]
-      disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100;
+      active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-35
+      disabled:active:scale-100;
+    background: var(--clay-500);
   }
 
-  .btn-ghost {
+  .btn-primary:hover:not(:disabled) {
+    background: var(--clay-600);
+  }
+
+  .btn-quiet {
     @apply tap inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm
-      font-medium transition hover:bg-black/5 active:scale-[0.98]
-      dark:hover:bg-white/10;
+      font-medium transition active:scale-[0.98];
+    color: var(--ink-soft);
+  }
+
+  .btn-quiet:hover:not(:disabled) {
+    background: var(--paper-tint);
+    color: var(--ink);
   }
 
   .field {
-    @apply tap w-full rounded-2xl border bg-transparent px-4 py-3 text-lg outline-none
-      transition placeholder:opacity-50 focus:border-accent-500
-      focus:ring-4 focus:ring-accent-500/20;
+    @apply tap w-full rounded-2xl border bg-transparent px-4 py-3.5 text-lg outline-none
+      transition placeholder:opacity-40;
     border-color: var(--line);
+    background: var(--card);
+  }
+
+  .field:focus {
+    border-color: var(--clay-300);
+    box-shadow: 0 0 0 4px var(--clay-50);
   }
 
   .choice {
-    @apply tap flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left text-base
-      transition active:scale-[0.99];
+    @apply tap flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left
+      text-base transition active:scale-[0.99];
     border-color: var(--line);
     background: var(--card);
   }
 
   .choice:hover {
-    border-color: theme("colors.accent.400");
+    border-color: var(--clay-300);
+    background: var(--clay-50);
   }
 
   .choice-selected {
-    border-color: theme("colors.accent.500") !important;
-    background: theme("colors.accent.50");
-    color: theme("colors.accent.900");
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .choice-selected {
-    background: theme("colors.accent.900") !important;
-    color: theme("colors.accent.50") !important;
+    border-color: var(--clay-500);
+    background: var(--clay-50);
   }
 }
 
@@ -129,16 +139,16 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 44px; /* keeps the tap target big */
+  height: 44px;
   background: transparent;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
   background: linear-gradient(
     to right,
-    theme("colors.accent.500") var(--pct, 50%),
+    var(--clay-500) var(--pct, 50%),
     var(--line) var(--pct, 50%)
   );
 }
@@ -147,33 +157,33 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   margin-top: -9px;
-  height: 30px;
-  width: 30px;
+  height: 28px;
+  width: 28px;
   border-radius: 999px;
   background: #fff;
-  border: 4px solid theme("colors.accent.600");
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  border: 4px solid var(--clay-500);
+  box-shadow: var(--shadow-soft);
   cursor: grab;
 }
 
 input[type="range"]::-moz-range-track {
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
   background: var(--line);
 }
 
 input[type="range"]::-moz-range-progress {
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
-  background: theme("colors.accent.500");
+  background: var(--clay-500);
 }
 
 input[type="range"]::-moz-range-thumb {
-  height: 26px;
-  width: 26px;
+  height: 24px;
+  width: 24px;
   border-radius: 999px;
   background: #fff;
-  border: 4px solid theme("colors.accent.600");
+  border: 4px solid var(--clay-500);
 }
 
 /* ------------------------- reduced motion ------------------------------- */

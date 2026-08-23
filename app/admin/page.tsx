@@ -81,8 +81,8 @@ export default async function AdminPage({
   return (
     <Shell q={q} since={since}>
       {dbError && (
-        <div className="card mb-5 rounded-chunk border-accent-300 p-5">
-          <p className="text-sm font-semibold text-accent-600">Database error</p>
+        <div className="card mb-5 rounded-chunk border-clay-300 p-5">
+          <p className="text-sm font-semibold text-clay-600">Database error</p>
           <p className="muted mt-1 break-words font-mono text-xs">{dbError}</p>
           <p className="muted mt-2 text-xs">
             Usually means the tables don&apos;t exist yet — run{" "}
@@ -103,7 +103,7 @@ export default async function AdminPage({
           <h2 className="font-display text-lg font-bold">Nothing here yet</h2>
           <p className="muted mt-2 text-sm">
             {q || since ? "No runs match that filter." : "Send them the link and wait."}{" "}
-            <Link href="/" className="underline hover:text-accent-600">
+            <Link href="/" className="underline hover:text-clay-600">
               Open the site
             </Link>
           </p>

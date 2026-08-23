@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ProgressBar from "./ProgressBar";
+import SongLines from "./SongLines";
 import StepCard from "./StepCard";
 import { useConfetti } from "./Confetti";
-import { STEPS, TOTAL_STEPS, getStep } from "@/lib/steps";
+import { NAME_STEP, STEPS, TOTAL_STEPS, getStep, tintFor } from "@/lib/steps";
 import {
   getAnswers,
   getLastStep,
@@ -15,8 +16,11 @@ import {
   setVisitorName,
 } from "@/lib/client";
 
-/** Extra confetti at the quarter marks, on top of per-step `confetti` flags. */
-const MILESTONES = new Set([5, 10, 15]);
+/**
+ * Extra confetti at the thirds, on top of per-step `confetti` flags. Kept off
+ * steps 10 and 12, which already burst on their own.
+ */
+const MILESTONES = new Set([4, 8]);
 
 const SWIPE_THRESHOLD = 60; // px
 
@@ -41,7 +45,7 @@ export default function GauntletWizard({ initialName = "" }: { initialName?: str
 
     if (initialName) {
       setVisitorName(initialName);
-      restored[1] = restored[1] || initialName;
+      restored[NAME_STEP] = restored[NAME_STEP] || initialName;
     }
 
     setValues(restored);
@@ -75,9 +79,9 @@ export default function GauntletWizard({ initialName = "" }: { initialName?: str
     const isLast = step >= TOTAL_STEPS;
     setSaving(true);
 
-    // Step 1 doubles as the name field.
-    const name = step === 1 && answer ? answer : getVisitorName();
-    if (step === 1 && answer) setVisitorName(answer);
+    // One step doubles as the name field.
+    const name = step === NAME_STEP && answer ? answer : getVisitorName();
+    if (step === NAME_STEP && answer) setVisitorName(answer);
 
     await saveAnswer(step, current.question, answer || "(skipped)", {
       completed: isLast,
@@ -159,11 +163,13 @@ export default function GauntletWizard({ initialName = "" }: { initialName?: str
 
   return (
     <main
-      className="screen px-4 py-8 sm:px-6 sm:py-12"
+      className="screen relative overflow-hidden px-4 py-8 sm:px-6 sm:py-12"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <div className="mx-auto w-full max-w-xl">
+      <SongLines key={step} lines={current.song} tint={tintFor(step)} />
+
+      <div className="relative z-10 mx-auto w-full max-w-xl">
         <div className="mb-7">
           <ProgressBar current={step} />
         </div>

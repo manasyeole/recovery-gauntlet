@@ -1,17 +1,18 @@
 /**
- * THE 20 STEPS
+ * THE 12 STEPS
  * ============
  * This array is the whole gauntlet. Edit the copy freely — the wizard,
  * progress bar, API and certificate all read from here.
  *
- * Five steps are marked `yourTurn: true` (5, 10, 14, 17, 19). These are the
- * personalisation slots — they're fully written and land fine as-is, but they
- * get sharper with a real inside joke. Search for "PERSONALISE ME".
+ * Four steps are marked `yourTurn: true` (4, 6, 7, 9). These are the
+ * personalisation slots — they land fine as-is, but they get sharper with a
+ * real inside joke. Search for "PERSONALISE ME".
  *
  * NOTE: `hint` renders on screen, under the question. Author notes belong in
  * comments, never in `hint` — a stray note there is visible to the visitor.
  *
  * `spotlight: true` marks answers worth quoting on the certificate screen.
+ * `song` is the decorative couplet drawn behind the card (see SongLines).
  */
 
 export type StepType =
@@ -26,6 +27,9 @@ export type StepType =
 
 export type StepKind = "greeting" | "tease" | "question" | "activity" | "closing";
 
+/** Two lines of decorative type drawn behind the card. Never read aloud. */
+export type SongLine = readonly [string, string];
+
 export interface Step {
   number: number;
   kind: StepKind;
@@ -37,6 +41,11 @@ export interface Step {
   hint?: string;
   placeholder?: string;
   options?: string[];
+  /**
+   * `choice` only. When set, picking an option reveals this punchline instead
+   * of advancing, and the visitor taps Continue themselves.
+   */
+  reveal?: string;
   /** slider / number only */
   min?: number;
   max?: number;
@@ -55,6 +64,8 @@ export interface Step {
   spotlight?: boolean;
   /** Replace this one with your own material. */
   yourTurn?: boolean;
+  /** Decorative background couplet for this step. */
+  song: SongLine;
 }
 
 export const STEPS: Step[] = [
@@ -63,296 +74,179 @@ export const STEPS: Step[] = [
     kind: "greeting",
     type: "text",
     emoji: "🦵",
-    question:
-      "First things first — what should we call you?",
+    question: "First things first — what should we call you?",
     hint: "Real name preferred. Nicknames will be used against you later.",
     placeholder: "Your name, survivor",
     required: true,
+    song: ["first, your name,", "then your excuses"],
   },
   {
     number: 2,
     kind: "tease",
     type: "slider",
-    emoji: "🎭",
-    question:
-      "On a scale of 'stubbed my toe' to 'reenacting a war movie,' how dramatic were you when it happened?",
-    min: 1,
+    emoji: "💊",
+    question: "Your brain is working. The surgery was a success.",
+    hint: "Now rate your pain. This meter has heard every lie before.",
+    min: 0,
     max: 10,
-    minLabel: "Stubbed my toe",
-    maxLabel: "Reenacting a war movie",
+    minLabel: "“fine”",
+    maxLabel: "Call someone",
     required: true,
+    song: ["turn it down,", "I can feel my pulse"],
   },
   {
     number: 3,
     kind: "question",
-    type: "number",
-    emoji: "🚶",
-    question:
-      "Be honest: how many times have you already tried to walk normally today and regretted it?",
-    hint: "Zero is a lie and we both know it.",
-    placeholder: "0",
-    min: 0,
-    max: 999,
+    type: "text",
+    emoji: "🚪",
+    question: "Which friend got to you before the swelling did?",
+    hint: "One person. You know exactly who.",
+    placeholder: "The one who brought crisps, not flowers",
     required: true,
-  },
-  {
-    number: 4,
-    kind: "activity",
-    type: "confirm",
-    emoji: "😩",
-    question:
-      "Say 'ouch' out loud right now, as dramatically as possible. We will know if you're lying.",
-    hint: "If someone else is in the room, even better.",
-    cta: "I did it (I'm not lying)",
-    confetti: true,
+    spotlight: true,
+    song: ["somebody got here", "before the swelling did"],
   },
 
-  // --- PERSONALISE ME (step 5) -------------------------------------------
-  // Works as-is for any leg injury. If the real story is good, replace the
-  // options with it — keep one deliberately absurd option in the list.
+  // --- PERSONALISE ME (step 4) -------------------------------------------
+  // The reveal is the whole joke. Swap in whatever the group chat actually
+  // calls them — the three options are meant to all be wrong.
   // -----------------------------------------------------------------------
+  {
+    number: 4,
+    kind: "tease",
+    type: "choice",
+    emoji: "📵",
+    question: "What do your friends actually call you?",
+    hint: "Pick carefully. There is one correct answer and you already know it.",
+    options: ["Champ", "Warrior", "Legend"],
+    reveal: "Wrong. It is “bitch”. Said with love, at volume, in the group chat.",
+    required: true,
+    yourTurn: true,
+    song: ["they gave me a name", "and it stuck"],
+  },
+
   {
     number: 5,
     kind: "tease",
-    type: "choice",
-    emoji: "🎬",
-    question:
-      "Official Incident Report. For the permanent record: what actually took you down?",
-    hint: "Choose carefully. This is the version history will remember.",
-    options: [
-      "Sports. I was being athletic and the universe objected.",
-      "Stairs. Not even a lot of them.",
-      "A vehicle was involved and I'd rather not elaborate.",
-      "I was rushing somewhere that would have waited for me.",
-      "Genuinely nothing. My leg resigned without notice.",
-      "I know exactly what happened and I will never tell you.",
-    ],
-    spotlight: true,
-    yourTurn: true,
+    type: "text",
+    emoji: "😂",
+    question: "Funniest thing a friend has said about your leg?",
+    hint: "Direct quote. They will deny it.",
+    placeholder: "“At least now you have an excuse”",
     required: true,
+    spotlight: true,
+    song: ["you sang the wrong words", "and we let you"],
   },
 
+  // --- PERSONALISE ME (step 6) -------------------------------------------
+  // Name the actual family member if you can get away with it.
+  // -----------------------------------------------------------------------
   {
     number: 6,
     kind: "question",
-    type: "choice",
-    emoji: "🛏️",
-    question:
-      "Rate your current bed-rot level from 'productive hermit' to 'human blanket burrito.'",
-    options: [
-      "Productive hermit — laptop, schedule, dignity",
-      "Mildly horizontal but functional",
-      "Structurally part of the mattress now",
-      "Human blanket burrito. Do not disturb.",
-    ],
+    type: "text",
+    emoji: "📞",
+    question: "Who in your family panicked hardest, and how fast?",
+    hint: "Minutes, not hours. Be precise.",
+    placeholder: "Mum, four minutes flat, by phone",
     required: true,
+    yourTurn: true,
+    song: ["four minutes flat,", "and the phone rang twice"],
   },
+
+  // --- PERSONALISE ME (step 7) -------------------------------------------
+  // Swap the placeholder for whatever actually gets cooked in their house.
+  // -----------------------------------------------------------------------
   {
     number: 7,
-    kind: "tease",
-    type: "choice",
-    emoji: "🧹",
-    question: "Pick the item you have used as an emergency mobility aid:",
-    options: [
-      "A broom",
-      "A chair on wheels",
-      "A very judgmental cat",
-      "A family member I bossed around",
-      "All of the above, in one afternoon",
-    ],
-    spotlight: true,
+    kind: "question",
+    type: "text",
+    emoji: "🍲",
+    question: "Which family dish did more for you than the painkillers?",
+    hint: "Credit where credit is due.",
+    placeholder: "Rice, ghee, and unsolicited opinions",
     required: true,
+    spotlight: true,
+    yourTurn: true,
+    song: ["the kitchen smelled", "like getting better"],
   },
+
   {
     number: 8,
-    kind: "activity",
-    type: "text",
-    emoji: "💃",
-    question:
-      "Do your best 'crutches strut' in your head and describe it in one sentence like a runway commentator.",
-    hint: "Commit to the bit. Use the voice.",
-    placeholder: "And here comes the look…",
-    spotlight: true,
-    confetti: true,
-  },
-  {
-    number: 9,
-    kind: "question",
+    kind: "tease",
     type: "number",
-    emoji: "🛋️",
-    question:
-      "How many pillows are currently propping up your leg? Answer honestly, we both know it's excessive.",
-    placeholder: "Count them. Now.",
+    emoji: "🙂",
+    question: "How many times did you say “I’m fine” today?",
+    hint: "Each one costs you a point of credibility.",
+    placeholder: "0",
     min: 0,
     max: 99,
     required: true,
+    song: ["I said I was fine", "in eleven languages"],
   },
 
-  // --- PERSONALISE ME (step 10) ------------------------------------------
-  // Swap in the actual message they sent you, if you still have it. Quoting
-  // it back at them lands harder than asking.
+  // --- PERSONALISE ME (step 9) -------------------------------------------
+  // Point the reveal at one specific unresolved household crime.
   // -----------------------------------------------------------------------
   {
-    number: 10,
+    number: 9,
     kind: "tease",
-    type: "longtext",
-    emoji: "📞",
-    question:
-      "Reconstruct the message you sent when you broke the news — including the part where you undersold it.",
-    hint: "We've all read that message. We just want it in writing, from you.",
-    placeholder: "hey so minor thing, don't freak out…",
-    spotlight: true,
+    type: "choice",
+    emoji: "🧦",
+    question: "Who put the sock on the bad leg?",
+    hint: "Justice requires a name.",
+    options: ["Me. Heroically.", "Mum", "Nobody. Sock lost."],
+    reveal: "It was gravity, and it took four minutes. We have footage.",
+    required: true,
     yourTurn: true,
+    song: ["gravity took the sock", "and took its time"],
   },
 
   {
-    number: 11,
-    kind: "activity",
-    type: "hold",
-    emoji: "🤫",
-    question:
-      "Hold perfectly still and silent for 5 seconds to 'prove' you're resting.",
-    cta: "Hold to rest",
-    holdSeconds: 5,
+    number: 10,
+    kind: "question",
+    type: "text",
+    emoji: "☀️",
+    question: "Best thing that happened this week. It does not have to be big.",
+    hint: "Small counts. Small is the whole point.",
+    placeholder: "Sat outside for eleven whole minutes",
+    required: true,
+    spotlight: true,
     confetti: true,
+    song: ["eleven minutes of weather", "and I took it"],
+  },
+  {
+    number: 11,
+    kind: "question",
+    type: "text",
+    emoji: "🎧",
+    question: "What song have you had on repeat since it happened?",
+    hint: "This one goes on the certificate. Pick something you would defend.",
+    placeholder: "The loud one, obviously",
+    required: true,
+    spotlight: true,
+    song: ["turn it up,", "I can’t feel my knee"],
   },
   {
     number: 12,
-    kind: "tease",
-    type: "text",
-    emoji: "🗣️",
-    question: "If your injured leg could talk right now, what would it be yelling at you?",
-    placeholder: "Direct quote, please",
-    spotlight: true,
-  },
-  {
-    number: 13,
-    kind: "question",
-    type: "text",
-    emoji: "🙏",
-    question:
-      "What's the most ridiculous thing you've asked someone to fetch for you since this happened?",
-    placeholder: "Be specific. Names optional.",
-    spotlight: true,
-  },
-
-  // --- PERSONALISE ME (step 14) ------------------------------------------
-  // Name the actual trip/match/wedding for maximum guilt. The generic
-  // categories below still work if there isn't one.
-  // -----------------------------------------------------------------------
-  {
-    number: 14,
-    kind: "tease",
-    type: "choice",
-    emoji: "🗓️",
-    question:
-      "Let the record show you have personally cancelled things. Which category of plan did you destroy?",
-    hint: "Sentencing will be handled by the group chat.",
-    options: [
-      "A trip. Deposits were paid. People are upset.",
-      "A match I was, allegedly, essential to.",
-      "An event I now get to attend seated.",
-      "Nothing — I've just made everything 40% slower.",
-      "I have cancelled nothing. I will be attending. Horizontally if needed.",
-    ],
-    spotlight: true,
-    yourTurn: true,
-    required: true,
-  },
-
-  {
-    number: 15,
-    kind: "activity",
-    type: "choice",
-    emoji: "🏆",
-    question: "Attempt one (1) single-leg victory pose. Rate how it went.",
-    hint: "Please do not actually injure yourself. Again.",
-    options: [
-      "Graceful. Olympic, even.",
-      "Wobbly, but survived",
-      "Grabbed furniture halfway through",
-      "New injury acquired",
-      "I declined on medical grounds",
-    ],
-    spotlight: true,
-    confetti: true,
-    required: true,
-  },
-  {
-    number: 16,
-    kind: "question",
-    type: "slider",
-    emoji: "📺",
-    question:
-      "Pain levels aside — rate your Netflix-and-recovery-content quality this week out of 10.",
-    min: 1,
-    max: 10,
-    minLabel: "Rewatching ads",
-    maxLabel: "Genuinely peak television",
-    required: true,
-  },
-
-  // --- PERSONALISE ME (step 17) ------------------------------------------
-  // If they already have a nickname, work it into the question so they have
-  // to defend it.
-  // -----------------------------------------------------------------------
-  {
-    number: 17,
-    kind: "tease",
-    type: "text",
-    emoji: "🏷️",
-    question:
-      "Propose your new legal name. It must reference the injury. It will be used in group chats, at formal occasions, and eventually in your eulogy.",
-    hint: "Whatever you type here is binding. Choose accordingly.",
-    placeholder: "Set the bar higher than 'One-Leg Larry'",
-    spotlight: true,
-    yourTurn: true,
-  },
-
-  {
-    number: 18,
-    kind: "tease",
-    type: "yesno",
-    emoji: "🔍",
-    question:
-      "Confess: have you Googled your own symptoms/recovery timeline more than 5 times today?",
-    hint: "Search history is admissible evidence.",
-    required: true,
-  },
-
-  // --- PERSONALISE ME (step 19) ------------------------------------------
-  // Best slot for the joke only your group would get. Point the question at
-  // one specific unresolved crime.
-  // -----------------------------------------------------------------------
-  {
-    number: 19,
-    kind: "tease",
-    type: "longtext",
-    emoji: "😈",
-    question:
-      "Last chance. You are immobile, cornered, and legally obliged to answer: what have you been getting away with that we should know about?",
-    hint: "You physically cannot run away from this question. That was the whole plan.",
-    placeholder: "Fine. Okay. So.",
-    spotlight: true,
-    yourTurn: true,
-  },
-
-  {
-    number: 20,
     kind: "closing",
-    type: "longtext",
+    type: "text",
     emoji: "🎓",
-    question:
-      "Congratulations, survivor. You've completed The Gauntlet. Type one sentence of advice for the next unlucky soul who breaks a leg.",
+    question: "One line of advice for the next unlucky soul.",
     hint: "This goes on your certificate. Choose wisely.",
-    placeholder: "My advice to the next idiot:",
-    spotlight: true,
-    confetti: true,
+    placeholder: "Say yes to the pillow, say no to the stairs",
     required: true,
+    confetti: true,
+    spotlight: true,
+    song: ["call it a comeback,", "call it a limp"],
   },
 ];
 
 export const TOTAL_STEPS = STEPS.length;
+
+/** Decorative couplets for the screens that aren't a step. */
+export const LANDING_SONG: SongLine = ["and the leg said no,", "but the heart said one more"];
+export const CERTIFICATE_SONG: SongLine = ["six weeks of ceiling,", "one week of sky"];
 
 export function getStep(n: number): Step | undefined {
   return STEPS.find((s) => s.number === n);
@@ -361,28 +255,33 @@ export function getStep(n: number): Step | undefined {
 /** Steps whose answers are quoted on the certificate. */
 export const SPOTLIGHT_STEPS = STEPS.filter((s) => s.spotlight).map((s) => s.number);
 
+/** The step that doubles as the visitor's name field. */
+export const NAME_STEP = 1;
+
+/**
+ * A pale tint per step, cycled, so consecutive screens feel distinct. Shared
+ * by the card's emoji tile and the wash behind it.
+ */
+const TINTS = ["bg-clay-50", "bg-tint-sage", "bg-tint-sky", "bg-tint-butter"] as const;
+
+export function tintFor(stepNumber: number): (typeof TINTS)[number] {
+  return TINTS[(stepNumber - 1) % TINTS.length];
+}
+
 /** Short labels for the admin table and certificate, so long questions don't wreck layout. */
 export const SHORT_LABELS: Record<number, string> = {
   1: "Name",
-  2: "Drama level",
-  3: "Failed normal walks",
-  4: "Said 'ouch'",
-  5: "Cause of downfall",
-  6: "Bed-rot level",
-  7: "Emergency mobility aid",
-  8: "Runway commentary",
-  9: "Pillow count",
-  10: "How they broke the news",
-  11: "Proof of resting",
-  12: "What the leg is yelling",
-  13: "Most ridiculous fetch request",
-  14: "Plans destroyed",
-  15: "Single-leg victory pose",
-  16: "Recovery TV rating",
-  17: "New legal name",
-  18: "Googled symptoms 5+ times",
-  19: "Final confession",
-  20: "Advice for the next idiot",
+  2: "Pain level",
+  3: "Friend who got there first",
+  4: "What friends call them",
+  5: "Funniest thing a friend said",
+  6: "Who panicked hardest",
+  7: "The family dish",
+  8: "Times they said “I’m fine”",
+  9: "Who put the sock on",
+  10: "Best thing this week",
+  11: "Song on repeat",
+  12: "Advice for the next soul",
 };
 
 export function labelFor(stepNumber: number): string {

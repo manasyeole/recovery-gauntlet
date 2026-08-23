@@ -1,6 +1,8 @@
 import Countdown from "@/components/Countdown";
+import SongLines from "@/components/SongLines";
 import StartForm from "@/components/StartForm";
 import { SITE_CONFIG } from "@/lib/config";
+import { LANDING_SONG } from "@/lib/steps";
 
 export default async function LandingPage({
   searchParams,
@@ -11,8 +13,10 @@ export default async function LandingPage({
   const who = (name ?? SITE_CONFIG.friendName).slice(0, 80);
 
   return (
-    <main className="screen flex items-center px-5 py-14 sm:px-8">
-      <div className="mx-auto w-full max-w-xl">
+    <main className="screen relative flex items-center overflow-hidden px-5 py-14 sm:px-8">
+      <SongLines lines={LANDING_SONG} />
+
+      <div className="relative z-10 mx-auto w-full max-w-xl">
         <span aria-hidden className="mb-7 block text-5xl">
           🦵
         </span>

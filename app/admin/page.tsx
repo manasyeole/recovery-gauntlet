@@ -74,8 +74,8 @@ export default async function AdminPage({
   }
 
   const finished = sessions.filter((s) => s.completed).length;
-  const drama = numbersFor(sessions, 2);
-  const pillows = numbersFor(sessions, 9);
+  const pain = numbersFor(sessions, 2);
+  const fines = numbersFor(sessions, 8);
   const avg = (xs: number[]) => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(1) : "—");
 
   return (
@@ -93,9 +93,9 @@ export default async function AdminPage({
 
       <dl className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label="Runs" value={String(sessions.length)} />
-        <Stat label="Finished all 20" value={String(finished)} />
-        <Stat label="Avg drama level" value={avg(drama)} hint="Step 2, out of 10" />
-        <Stat label="Avg pillows" value={avg(pillows)} hint="Step 9" />
+        <Stat label={`Finished all ${TOTAL_STEPS}`} value={String(finished)} />
+        <Stat label="Avg pain level" value={avg(pain)} hint="Step 2, out of 10" />
+        <Stat label="Avg “I’m fine”s" value={avg(fines)} hint="Step 8" />
       </dl>
 
       {sessions.length === 0 ? (

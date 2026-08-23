@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { answeredCount, getVisitorName, resetRun, setVisitorName } from "@/lib/client";
+import { TOTAL_STEPS } from "@/lib/steps";
 
 export default function StartForm({ initialName = "" }: { initialName?: string }) {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function StartForm({ initialName = "" }: { initialName?: string }
 
       {inProgress > 0 && (
         <p className="muted text-sm">
-          {inProgress} of 20 answered.{" "}
+          {inProgress} of {TOTAL_STEPS} answered.{" "}
           <button
             type="button"
             onClick={() => {

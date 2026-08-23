@@ -1,6 +1,6 @@
 import GauntletWizard from "@/components/GauntletWizard";
 
-export const metadata = { title: "The Gauntlet — 20 steps" };
+export const metadata = { title: "The Gauntlet — 12 steps" };
 
 export default async function GauntletPage({
   searchParams,

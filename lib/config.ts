@@ -17,11 +17,11 @@ export const SITE_CONFIG = {
   followUpDate: process.env.NEXT_PUBLIC_FOLLOWUP_DATE || "",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "",
 
-  totalSteps: 20,
+  totalSteps: 12,
 
   copy: {
     title: "The Recovery Gauntlet",
-    tagline: "20 steps between you and your Certificate of Successful Suffering.",
+    tagline: "12 steps between you and your Certificate of Successful Suffering.",
     subhead: "How did you even manage this.",
     startCta: "Start the Gauntlet",
   },

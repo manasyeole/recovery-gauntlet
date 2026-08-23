@@ -1,6 +1,6 @@
 "use client";
 
-import type { Step } from "@/lib/steps";
+import { tintFor, type Step } from "@/lib/steps";
 import ChoiceField from "./inputs/ChoiceField";
 import ConfirmButton from "./inputs/ConfirmButton";
 import HoldButton from "./inputs/HoldButton";
@@ -23,8 +23,7 @@ const FIELDS: Record<Step["type"], (p: FieldProps) => React.JSX.Element> = {
 /** Controls that submit themselves — no Continue button needed. */
 const SELF_ADVANCING: ReadonlySet<Step["type"]> = new Set(["choice", "yesno", "confirm", "hold"]);
 
-/** A pale tint per step, cycled, so consecutive screens feel distinct. */
-const TINTS = ["bg-clay-50", "bg-tint-sage", "bg-tint-sky", "bg-tint-butter"] as const;
+// The tint cycle lives in lib/steps.ts so the wash behind the card matches.
 
 interface Props extends FieldProps {
   onBack?: () => void;
@@ -44,9 +43,11 @@ export default function StepCard({
   saving,
 }: Props) {
   const Field = FIELDS[step.type];
-  const selfAdvancing = SELF_ADVANCING.has(step.type);
+  // A step with a reveal has to wait for the visitor to read the punchline,
+  // so it keeps its Continue button.
+  const selfAdvancing = SELF_ADVANCING.has(step.type) && !step.reveal;
   const blocked = Boolean(step.required) && value.trim().length === 0;
-  const tint = TINTS[(step.number - 1) % TINTS.length];
+  const tint = tintFor(step.number);
 
   return (
     <section

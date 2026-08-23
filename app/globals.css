@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Swap these for next/font variables if you want webfonts (see layout.tsx). */
+  --font-display: "Baloo 2", ui-rounded, "Segoe UI Rounded", "Hiragino Maru Gothic ProN",
+    system-ui, sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --page: #fffaf5;
+  --page-2: #fff1f2;
+  --card: #ffffff;
+  --text: #1c1917;
+  --muted: #78716c;
+  --line: #e7e5e4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #14100f;
+    --page-2: #1c1412;
+    --card: #221b19;
+    --text: #f5f5f4;
+    --muted: #a8a29e;
+    --line: #3a302d;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, var(--page-2), transparent 70%),
+      var(--page);
+    color: var(--text);
+    font-family: var(--font-body);
+    /* Stop iOS from zooming when focusing inputs. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  /* Visible focus ring for keyboard users on the big tappable choices. */
+  :focus-visible {
+    outline: 3px solid theme("colors.accent.500");
+    outline-offset: 3px;
+    border-radius: 0.75rem;
+  }
+}
+
+@layer components {
+  /* Full-height that behaves under mobile browser chrome. */
+  .screen {
+    min-height: 100dvh;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  /* Minimum 44px tap targets — the audience is one-handed on a couch. */
+  .tap {
+    min-height: 44px;
+  }
+
+  .btn-primary {
+    @apply tap inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 px-6 py-3
+      text-base font-semibold text-white transition
+      hover:bg-accent-700 active:scale-[0.98]
+      disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100;
+  }
+
+  .btn-ghost {
+    @apply tap inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm
+      font-medium transition hover:bg-black/5 active:scale-[0.98]
+      dark:hover:bg-white/10;
+  }
+
+  .field {
+    @apply tap w-full rounded-2xl border bg-transparent px-4 py-3 text-lg outline-none
+      transition placeholder:opacity-50 focus:border-accent-500
+      focus:ring-4 focus:ring-accent-500/20;
+    border-color: var(--line);
+  }
+
+  .choice {
+    @apply tap flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left text-base
+      transition active:scale-[0.99];
+    border-color: var(--line);
+    background: var(--card);
+  }
+
+  .choice:hover {
+    border-color: theme("colors.accent.400");
+  }
+
+  .choice-selected {
+    border-color: theme("colors.accent.500") !important;
+    background: theme("colors.accent.50");
+    color: theme("colors.accent.900");
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .choice-selected {
+    background: theme("colors.accent.900") !important;
+    color: theme("colors.accent.50") !important;
+  }
+}
+
+/* ------------------------------- slider ---------------------------------- */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* keeps the tap target big */
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    theme("colors.accent.500") var(--pct, 50%),
+    var(--line) var(--pct, 50%)
+  );
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -9px;
+  height: 30px;
+  width: 30px;
+  border-radius: 999px;
+  background: #fff;
+  border: 4px solid theme("colors.accent.600");
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  cursor: grab;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+input[type="range"]::-moz-range-progress {
+  height: 12px;
+  border-radius: 999px;
+  background: theme("colors.accent.500");
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 26px;
+  width: 26px;
+  border-radius: 999px;
+  background: #fff;
+  border: 4px solid theme("colors.accent.600");
+}
+
+/* ------------------------- reduced motion ------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

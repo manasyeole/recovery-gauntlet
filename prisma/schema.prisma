@@ -1,0 +1,37 @@
+// The Recovery Gauntlet — data model
+// Provider is postgresql (Vercel Postgres / Neon / Supabase all speak it).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  visitorName String?
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  answers     Answer[]
+
+  @@index([createdAt])
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  stepNumber Int
+  question   String
+  answer     String
+  createdAt  DateTime @default(now())
+
+  // One answer per step per session — re-answering a step overwrites it.
+  @@unique([sessionId, stepNumber])
+  @@index([sessionId])
+}

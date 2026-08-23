@@ -1,0 +1,33 @@
+app/layout.tsx
+  s_383edcfad16d60::t_7cf806802cf9dd 11
+lib/config.ts
+  s_383edcfad16d60::t_7cf806802cf9dd 24
+components/StepCard.tsx
+  s_383edcfad16d60::t_7cf806802cf9dd 96
+DESIGN.md
+  s_383edcfad16d60::t_ad849fcf305235 7-8,11-13,185-196,231-233
+components/FinishLine.tsx
+  s_383edcfad16d60::t_f203ae59dd5d32 1-102
+lib/steps.ts
+  s_383edcfad16d60::t_7cf806802cf9dd 5,14,74,236,248,272,281,284,297
+components/inputs/GuessField.tsx
+  s_383edcfad16d60::t_7cf806802cf9dd 23
+app/results/page.tsx
+  s_383edcfad16d60::t_7cf806802cf9dd 1,3,5,10,13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "26f0e9f14f5febf6c5122ef82b55c56142d5c47b",
+  "prompts": {},
+  "sessions": {
+    "s_383edcfad16d60": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a3e20e06-746a-4a21-a1c0-951514c53f07",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

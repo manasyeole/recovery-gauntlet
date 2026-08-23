@@ -1,0 +1,58 @@
+lib/config.ts
+  s_383edcfad16d60::t_f62338914f8fd4 20,24
+components/inputs/ChoiceField.tsx
+  s_383edcfad16d60::t_cf5c5d6e05ef66 10-12,15
+  s_383edcfad16d60::t_403ec3d51cc12b 55-63,65-79
+  s_383edcfad16d60::t_715783b534f696 18-28,31-33
+  s_383edcfad16d60::t_1debcd5a37b45c 34-47,52-54
+components/StartForm.tsx
+  s_383edcfad16d60::t_9670d42dd798c0 47
+  s_383edcfad16d60::t_2932e8b6cc425f 6
+app/gauntlet/page.tsx
+  s_383edcfad16d60::t_f62338914f8fd4 3
+DESIGN.md
+  s_383edcfad16d60::t_08acf8187002af 1-139,141-217,221-224,228-246
+  s_383edcfad16d60::t_97a428a8f83fdd 140,218-220,225-227
+components/SongLines.tsx
+  s_383edcfad16d60::t_104f86862a9a9c 17
+  s_383edcfad16d60::t_3ddb70594e3717 1-16,18-23,28-40
+  s_383edcfad16d60::t_4c84bb197037a2 24-27
+app/layout.tsx
+  s_383edcfad16d60::t_f62338914f8fd4 11
+lib/steps.ts
+  s_383edcfad16d60::t_a7398d96ffa8f2 2,7-9,15,30-32,44-48,67-68,77,81,87-90,92-93,95,100-104,106-107,109-113,116-125,131-135,137-138,141-143,147-151,153-154,156-159,162,164-168,170-171,173,175-176,178-181,185,188-189,192,194-200,202,206,209-212,216,219,222-225,228,231,233,235,237,239-241,247-250,258-264,266-270,274-284
+  s_383edcfad16d60::t_104f86862a9a9c 265
+app/admin/page.tsx
+  s_383edcfad16d60::t_bc0cad7f0393d4 77-78
+  s_383edcfad16d60::t_911be7980cb6d6 96-98
+components/GauntletWizard.tsx
+  s_383edcfad16d60::t_125b3e04856ecc 166,170-172
+  s_383edcfad16d60::t_e55ecd33719495 19-23
+  s_383edcfad16d60::t_59cff6768ec5b2 6,9
+  s_383edcfad16d60::t_18613039ef23c2 48
+  s_383edcfad16d60::t_1e5791260ba0f3 82-84
+components/StepCard.tsx
+  s_383edcfad16d60::t_dcaf192f9675d8 3
+  s_383edcfad16d60::t_954436e8269094 46-48,50
+  s_383edcfad16d60::t_53741c1d8f7fa1 26
+app/page.tsx
+  s_383edcfad16d60::t_394860a7884c23 2,5,16-19
+app/results/page.tsx
+  s_383edcfad16d60::t_394860a7884c23 2-3,9-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "efbc61ae9b5089bc62a1efb14caf5e39271c7126",
+  "prompts": {},
+  "sessions": {
+    "s_383edcfad16d60": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a3e20e06-746a-4a21-a1c0-951514c53f07",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}

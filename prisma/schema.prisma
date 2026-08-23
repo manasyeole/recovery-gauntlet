@@ -6,10 +6,15 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
+// No `directUrl` here on purpose. It would make DIRECT_DATABASE_URL a hard
+// requirement at runtime, and providers inject the connection string under
+// half a dozen different names. Instead: lib/prisma.ts resolves whichever
+// variable exists and passes it in explicitly, and scripts/migrate.mjs picks
+// a non-pooled URL for DDL.
 
 model Session {
   id          String   @id @default(cuid())

@@ -40,3 +40,94 @@ model Answer {
   @@unique([sessionId, stepNumber])
   @@index([sessionId])
 }
+
+/* ---------------------------------------------------------------------------
+ * The Games Room — multiplayer quiz, no accounts.
+ *
+ * Identity is a random token minted on join and kept in the player's own
+ * localStorage. There is nothing to log into and nothing to lose: a room is a
+ * six-character code that stops existing a few hours after the last question.
+ * ------------------------------------------------------------------------ */
+
+model GameRoom {
+  id       String @id @default(cuid())
+  /** The thing you read out loud. Unambiguous alphabet, see lib/games/codes.ts */
+  code     String @unique
+  /** Slug from lib/games/catalog.ts — cricket, wwe, one-piece, … */
+  gameSlug String
+
+  /** lobby → question → reveal → (question …) → finished */
+  status       String @default("lobby")
+  currentRound Int    @default(0)
+  totalRounds  Int    @default(10)
+  roundSeconds Int    @default(20)
+
+  /**
+   * The question ids for this room, shuffled once at creation, as a JSON
+   * array. Storing the whole plan up front means every round is a lookup
+   * rather than a draw, so two players polling at the same instant can never
+   * disagree about what question 7 is.
+   */
+  questionIds String
+
+  /**
+   * When the current phase runs out. Phase changes are driven off this by
+   * whoever polls next (see lib/games/engine.ts) — no cron, no socket server.
+   */
+  phaseEndsAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /** Rooms are disposable. Swept by GET /api/games/rooms once past this. */
+  expiresAt DateTime
+
+  players GamePlayer[]
+  answers GameAnswer[]
+
+  @@index([expiresAt])
+}
+
+model GamePlayer {
+  id     String   @id @default(cuid())
+  roomId String
+  room   GameRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  /** Secret held only by that browser. Doubles as the host credential. */
+  token  String
+  name   String
+  emoji  String  @default("🎮")
+  score  Int     @default(0)
+  streak Int     @default(0)
+  isHost Boolean @default(false)
+
+  joinedAt   DateTime @default(now())
+  /** Bumped on every poll, so the lobby can grey out people who wandered off. */
+  lastSeenAt DateTime @default(now())
+
+  answers GameAnswer[]
+
+  @@unique([roomId, token])
+  @@unique([roomId, name])
+  @@index([roomId])
+}
+
+model GameAnswer {
+  id       String     @id @default(cuid())
+  roomId   String
+  room     GameRoom   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  playerId String
+  player   GamePlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  round   Int
+  choice  Int
+  correct Boolean
+  points  Int
+  /** Milliseconds from the question appearing to the tap. Drives the bonus. */
+  msTaken Int
+
+  createdAt DateTime @default(now())
+
+  // One answer per player per round. First tap is final.
+  @@unique([playerId, round])
+  @@index([roomId, round])
+}

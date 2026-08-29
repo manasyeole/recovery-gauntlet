@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:migrate": "node scripts/migrate.mjs"
+    "db:migrate": "node scripts/migrate.mjs",
+    "check:questions": "node --experimental-strip-types --no-warnings scripts/check-questions.mts"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",

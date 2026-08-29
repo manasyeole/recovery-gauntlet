@@ -30,6 +30,16 @@
   --tint-sky: #eef3f7;
   --tint-butter: #fbf5e8;
 
+  /**
+   * Right / wrong, for the games room. The only place on the site that needs
+   * a colour to carry meaning on its own — and it never does so alone, every
+   * revealed answer is also labelled and ticked.
+   */
+  --good: #4d8a5c;
+  --good-tint: #ebf4ed;
+  --bad: #c55440;
+  --bad-tint: #fbeceb;
+
   --shadow-soft: 0 1px 2px rgb(42 36 34 / 0.04), 0 8px 24px -8px rgb(42 36 34 / 0.1);
   --shadow-lift: 0 2px 4px rgb(42 36 34 / 0.05), 0 18px 40px -14px rgb(42 36 34 / 0.16);
 }

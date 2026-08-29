@@ -28,6 +28,15 @@ export default function LandingPage() {
         <div className="mt-10">
           <Countdown />
         </div>
+
+        {/* The one other door on the site. Kept quiet so it doesn't compete
+            with the single instruction above it. */}
+        <Link
+          href="/games"
+          className="btn-quiet mt-10 inline-flex text-xs underline underline-offset-4"
+        >
+          or play something with the others
+        </Link>
       </div>
     </main>
   );

@@ -28,6 +28,9 @@ const config: Config = {
           sky: "var(--tint-sky)",
           butter: "var(--tint-butter)",
         },
+        // --good / --bad live in globals.css only. The reveal screen picks
+        // between them per choice at render time, so they are reached as CSS
+        // variables rather than through utility classes.
       },
       fontFamily: {
         display: ["var(--font-display)"],

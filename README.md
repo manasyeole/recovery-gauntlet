@@ -79,6 +79,79 @@ Without a `DATABASE_URL` the site still runs end to end — answers are kept in
 | `POST /api/session` | Creates a `Session`, returns `{ sessionId }`. |
 | `POST /api/answer` | Saves answers. Accepts one or a batch. |
 | `GET /api/admin/sessions` | JSON dump of every run (gated). |
+| `/games` | The games shelf — seven quizzes, plus the join-by-code box. |
+| `/games/create` | Open a room. `?game=<slug>` preselects one. |
+| `/games/room/[code]` | The room itself: seat, lobby, questions, final table. |
+
+---
+
+## The Games Room
+
+Seven themed quizzes — cricket, football, WWE, Naruto, One Piece, Pokémon,
+racing — running on **one shared multiplayer engine**. Someone opens a room,
+reads out a six-character code, and everyone answers the same timed question at
+the same time. No accounts, nothing to install.
+
+### How a room works
+
+```
+create  ──▶  lobby  ──▶  question  ⇄  reveal  ──▶  finished  ──▶  rematch
+              │            (N sec)     (6 sec)                      │
+              └──────────── same code, same people ─────────────────┘
+```
+
+- **Identity** is a random token minted on join and kept in that browser's
+  `localStorage`, one per room. Passing it back on a refresh is what returns you
+  to your own score instead of a second seat.
+- **The code is the credential.** Whoever has the link can play, which is the
+  right amount of security for a quiz among friends and none at all for
+  anything else.
+- **Scoring** is 100 for correct plus up to 100 for speed, so a slow right
+  answer always beats a fast wrong one. Every third correct in a row adds 25.
+- **The answer never leaves the server while a round is live** — `correctIndex`
+  first appears in the payload at the reveal, so reading the network tab
+  doesn't help.
+
+### Why polling and not websockets
+
+Vercel's serverless runtime makes a long-lived connection the awkward option
+and a 1.2-second `GET` the boring one. There is no scheduler either: **whoever
+polls next advances the clock** (`lib/games/engine.ts` → `tick`). Every
+transition is a conditional `updateMany` keyed on the state it expects to find,
+so a dozen browsers polling in the same millisecond produce exactly one advance
+and the rest just re-read.
+
+### Adding a game
+
+Two files, no route or component changes:
+
+1. Add an entry to [`lib/games/catalog.ts`](lib/games/catalog.ts) — slug, name,
+   emoji, and its three colours.
+2. Add `lib/games/questions/<slug>.ts` and register it in
+   [`lib/games/questions/index.ts`](lib/games/questions/index.ts).
+
+Then `npm run check:questions`, which catches the things a typecheck can't: an
+answer index off by one, two questions sharing an id, two identical choices in
+the same four.
+
+> Question **ids must never be renumbered** — a room in progress stores the ids
+> it drew at creation time. Append, don't renumber.
+
+### Games API
+
+| Route | What it does |
+| --- | --- |
+| `POST /api/games/rooms` | Opens a room, seats the host, returns `{ code, token }`. |
+| `GET /api/games/rooms/[code]` | The poll endpoint. Advances the clock, marks you present. |
+| `POST …/join` | Takes a seat, or renames you if you already have one. |
+| `POST …/start` | Host only. Puts question 1 up. |
+| `POST …/answer` | Locks one answer in. First tap is final. |
+| `POST …/next` | Host only. Cuts the current phase short. |
+| `POST …/rematch` | Host only. Same room and people, new questions. |
+
+Rooms are disposable — swept six hours after creation, players and answers
+cascading with them. Unlike the gauntlet, the games section **hard-requires
+Postgres**: a room is shared state by definition, so there is no local fallback.
 
 ---
 
@@ -156,14 +229,22 @@ model Answer {
 
 One `Session` per person who plays through; one `Answer` row per step.
 
+The games room adds three more tables — `GameRoom`, `GamePlayer`, `GameAnswer`.
+The interesting columns are `GameRoom.questionIds` (the whole question order,
+drawn once at creation so two players polling at the same instant can never
+disagree about what question 7 is) and `GameRoom.phaseEndsAt` (the clock every
+transition is driven off). See [`prisma/schema.prisma`](prisma/schema.prisma).
+
 ---
 
 ## Scripts
 
 ```bash
-npm run dev        # dev server
-npm run build      # prisma generate + next build
-npm start          # production server
-npm run db:push    # sync schema to the database
-npm run db:studio  # browse the data in Prisma Studio
+npm run dev              # dev server
+npm run build            # prisma generate + migrate deploy + next build
+npm start                # production server
+npm run db:push          # sync schema to the database
+npm run db:migrate       # apply migrations (what the build runs)
+npm run db:studio        # browse the data in Prisma Studio
+npm run check:questions  # validate every quiz bank and the scoring rules
 ```

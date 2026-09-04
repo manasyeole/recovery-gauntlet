@@ -106,6 +106,31 @@ one: Big Show is a common with Power 10 and Agility 2. `npm run check:cards`
 enforces the budget to the point, which is the only thing keeping the game from
 quietly rotting one card at a time.
 
+### The card face
+
+There are no photographs in this repo and there are not going to be — ninety-
+eight licensed images is a rights problem, not a design problem. So every card
+face is **drawn from the card's own numbers**: the portrait is a radar hexagon
+of its six stats over a sunburst seeded off its id
+([`components/games/CardArt.tsx`](components/games/CardArt.tsx)).
+
+That is worth more than a stock illustration would be. Big Show comes out as a
+spike, Rock Lee as a shape leaning hard off one side, Senna as a near-regular
+hexagon — so the picture *is* the data, and after a few rounds people recognise
+cards by silhouette before reading the name. Epics and legends also get a foil
+sweep across the face, which is the one thing a real card does that a flat
+rectangle on a screen doesn't.
+
+If you do have artwork, set `image` on the card to a path under `/public`:
+
+```ts
+{ id: "undertaker", name: "The Undertaker", image: "/cards/wwe/undertaker.png", … }
+```
+
+It takes over the middle of the frame and leaves everything else — the rays,
+the rarity chip, the affinity, the foil — exactly as it is, so real art can
+arrive one card at a time rather than all ninety-eight at once.
+
 ### A round
 
 ```

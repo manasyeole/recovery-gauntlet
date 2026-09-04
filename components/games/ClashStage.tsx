@@ -6,19 +6,20 @@ import { findCard, type Card } from "@/lib/games/cards";
 import { playCard } from "@/lib/games/client";
 import type { DuelState } from "@/lib/games/protocol";
 import DuelHeader, { EventBanner } from "./DuelHeader";
+import Hand from "./Hand";
 import PlayingCard, { CardBack } from "./PlayingCard";
 import RoundTimer from "./RoundTimer";
 
 /**
- * Choose a card, choose a stat, commit.
+ * Pick a card out of the fan, pick the stat to swing with, commit.
  *
- * Two taps and a confirm rather than one tap that fires: the stat is the
- * whole decision, and a mis-tap that spends your legend on its worst number
- * would be the most annoying thing in the game. Twenty-five seconds is plenty
- * of room for a second thought.
+ * Two taps and a confirm rather than one tap that fires: the stat is the whole
+ * decision, and a mis-tap that spends your legend on its worst number would be
+ * the most annoying thing in the game.
  *
- * Once committed the hand stays on screen, face up, greyed — so the wait has
- * something to read rather than being a spinner.
+ * Once committed the card stays on the table face-up on your side and the hand
+ * stays underneath, greyed — so the wait has something to read rather than
+ * being a spinner.
  */
 export default function ClashStage({
   code,
@@ -44,7 +45,6 @@ export default function ClashStage({
     .map((id) => findCard(state.gameSlug, id))
     .filter((c): c is Card => Boolean(c));
 
-  // Once you have played, the card on the table is the one to show.
   const shownId = committed?.cardId ?? pickedCard;
   const shown = shownId ? findCard(state.gameSlug, shownId) : undefined;
   const shownStat = committed ? committed.stat : pickedStat;
@@ -74,34 +74,50 @@ export default function ClashStage({
 
       <EventBanner gameSlug={state.gameSlug} eventId={state.eventId} />
 
-      {/* --------------------------- the table --------------------------- */}
-      <section className="grid grid-cols-2 gap-3" aria-label="The table">
-        <div>
-          <p className="muted mb-1.5 text-[0.65rem] font-bold uppercase tracking-widest">
+      {/* ------------------------------ the table -------------------------- */}
+      {/* A minimum rather than a fixed height: the two slots stretch to match
+          each other, so turning a face-down back into a full card does not
+          make the table jump — but a card taller than the reservation grows
+          the row instead of being clipped by the frame's overflow. */}
+      <section
+        className="card-stage grid min-h-[20rem] grid-cols-2 items-stretch gap-3"
+        aria-label="The table"
+      >
+        <div className="flex flex-col">
+          <p className="muted mb-1.5 truncate text-[0.65rem] font-bold uppercase tracking-widest">
             {them?.name ?? "Opponent"}
           </p>
-          {/* Their card is face-down and stays that way. The server does not
-              send it, so there is nothing here to peek at in the network tab. */}
-          <CardBack game={game} label={them?.committed ? "Card down" : "Still choosing"} />
+          {/* Their card stays face-down. The server does not send it, so there
+              is nothing to peek at in the network tab either. */}
+          <div className="flex-1">
+            <CardBack
+              game={game}
+              waiting={!them?.committed}
+              label={them?.committed ? "Card down" : "Choosing"}
+            />
+          </div>
         </div>
 
-        <div>
+        <div className="flex flex-col">
           <p className="muted mb-1.5 text-[0.65rem] font-bold uppercase tracking-widest">You</p>
-          {shown ? (
-            <PlayingCard
-              game={game}
-              card={shown}
-              compact
-              activeStat={shownStat}
-              onPickStat={committed ? undefined : setPickedStat}
-            />
-          ) : (
-            <CardBack game={game} label="Pick a card below" />
-          )}
+          <div className="flex-1">
+            {shown ? (
+              <PlayingCard
+                game={game}
+                card={shown}
+                compact
+                selected
+                activeStat={shownStat}
+                className={committed ? "flip-in" : ""}
+              />
+            ) : (
+              <CardBack game={game} waiting label="Pick a card" />
+            )}
+          </div>
         </div>
       </section>
 
-      {/* ---------------------------- the choice ------------------------- */}
+      {/* ------------------------------ the choice ------------------------- */}
       {committed ? (
         <p
           className="animate-pop-in rounded-2xl px-4 py-4 text-center text-sm"
@@ -116,40 +132,13 @@ export default function ClashStage({
         </p>
       ) : (
         <>
-          <div>
-            <p className="mb-2 text-sm font-semibold">
-              {pickedCard ? "Now pick the stat to attack with" : "Your hand"}
-            </p>
-            <p className="muted mb-3 text-xs leading-relaxed">
-              Whatever stat you choose, their card defends with the <em>same</em> one. Go where you
-              think they are thin.
-            </p>
-
-            {/* A horizontal strip, because four cards do not fit across a
-                phone and stacking them would bury the last one. */}
-            <ul className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
-              {hand.map((card) => (
-                <li key={card.id} className="w-[9.5rem] shrink-0 snap-start">
-                  <PlayingCard
-                    game={game}
-                    card={card}
-                    compact
-                    selected={pickedCard === card.id}
-                    activeStat={pickedCard === card.id ? pickedStat : null}
-                    onSelect={() => {
-                      setPickedCard(card.id);
-                      setPickedStat(null);
-                    }}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {pickedCard && (
             <div className="animate-pop-in">
-              <p className="mb-2 text-sm font-semibold">Attack with</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <p className="mb-1 text-sm font-semibold">Attack with</p>
+              <p className="muted mb-2.5 text-xs leading-relaxed">
+                Their card defends with the <em>same</em> stat. Go where you think they are thin.
+              </p>
+              <div className="grid grid-cols-3 gap-2">
                 {game.stats.map((label, i) => {
                   const value = shown?.stats[i] ?? 0;
                   const on = pickedStat === i;
@@ -159,17 +148,22 @@ export default function ClashStage({
                       type="button"
                       onClick={() => setPickedStat(i)}
                       aria-pressed={on}
-                      className={`tap flex items-center justify-between gap-2 rounded-2xl border
-                        px-3 py-2.5 text-left transition active:scale-[0.98]
-                        ${on ? "" : "hover:border-clay-300"}`}
+                      className="tap flex flex-col items-center justify-center gap-0.5 rounded-2xl
+                        border px-2 py-2 text-center transition active:scale-[0.97]"
                       style={{
                         borderColor: on ? game.accent : "var(--line)",
                         background: on ? game.tint : "var(--card)",
+                        boxShadow: on ? `0 0 0 3px ${game.tint}` : undefined,
                       }}
                     >
-                      <span className="text-xs font-semibold">{label}</span>
-                      <span className="text-base font-bold tabular-nums" style={{ color: game.ink }}>
+                      <span
+                        className="text-lg font-bold leading-none tabular-nums"
+                        style={{ color: on ? game.ink : "var(--ink)" }}
+                      >
                         {value}
+                      </span>
+                      <span className="muted text-[0.6rem] font-semibold uppercase tracking-wide">
+                        {game.statsShort[i]}
                       </span>
                     </button>
                   );
@@ -188,11 +182,27 @@ export default function ClashStage({
             {busy
               ? "Playing"
               : pickedStat !== null && shown
-                ? `${shown.name} — ${game.stats[pickedStat]} ${shown.stats[pickedStat]}`
-                : "Pick a card and a stat"}
+                ? `Play ${shown.name} — ${game.stats[pickedStat]} ${shown.stats[pickedStat]}`
+                : pickedCard
+                  ? "Now pick a stat"
+                  : "Pick a card from your hand"}
           </button>
         </>
       )}
+
+      {/* ------------------------------- the hand -------------------------- */}
+      <section aria-label="Your hand">
+        <Hand
+          game={game}
+          cards={hand}
+          selectedId={committed?.cardId ?? pickedCard}
+          disabled={Boolean(committed)}
+          onSelect={(id) => {
+            setPickedCard(id);
+            setPickedStat(null);
+          }}
+        />
+      </section>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Game } from "@/lib/games/catalog";
 import { startDuel } from "@/lib/games/client";
 import { SEATS, type DuelState } from "@/lib/games/protocol";
-import PlayingCard from "./PlayingCard";
+import Hand from "./Hand";
 import RoomCode from "./RoomCode";
 import { findCard, type Card } from "@/lib/games/cards";
 
@@ -91,20 +91,18 @@ export default function Lobby({
         </p>
       </section>
 
-      {/* Your opening hand, so the wait is spent learning your own cards
-          rather than watching an empty chair. */}
+      {/* Your opening hand, dealt into the fan, so the wait is spent learning
+          your own cards rather than watching an empty chair. */}
       {hand.length > 0 && (
         <section aria-labelledby="hand-heading">
-          <h2 id="hand-heading" className="mb-2 text-sm font-semibold">
+          <h2 id="hand-heading" className="mb-1 text-sm font-semibold">
             Your opening hand
           </h2>
-          <ul className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
-            {hand.map((card) => (
-              <li key={card.id} className="w-[9.5rem] shrink-0 snap-start">
-                <PlayingCard game={game} card={card} compact />
-              </li>
-            ))}
-          </ul>
+          <p className="muted mb-2 text-xs leading-relaxed">
+            Ten cards each, dealt to the same rarity quota — so the two decks are different and
+            worth exactly the same.
+          </p>
+          <Hand game={game} cards={hand} selectedId={null} disabled onSelect={() => {}} />
         </section>
       )}
 

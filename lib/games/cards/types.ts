@@ -93,8 +93,18 @@ export interface Card {
   rarity: Rarity;
   stats: Stats;
   ability: Ability;
-  /** Stands in for card art. One or two characters. */
+  /** The subject of the card face, when there is no artwork. */
   emoji: string;
+  /**
+   * Optional artwork, as a path under /public — e.g. "/cards/wwe/undertaker.png".
+   *
+   * Left unset everywhere on purpose: ninety-eight licensed photographs is a
+   * rights problem this repo has no answer to. Every card face is drawn from
+   * its own stats instead (see components/games/CardArt.tsx), and dropping a
+   * file in here swaps the middle of that frame without touching anything
+   * else — so real art can arrive one card at a time.
+   */
+  image?: string;
 }
 
 /* -------------------------------- events --------------------------------- */

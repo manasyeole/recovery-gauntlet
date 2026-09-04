@@ -1,4 +1,4 @@
-import { findRoom, serializeRoom, tick } from "@/lib/games/engine";
+import { findDuel, serializeDuel, tick } from "@/lib/games/engine";
 import { fail, ok, readJson, requireDatabase, tokenFrom } from "@/lib/games/http";
 import { cleanCode } from "@/lib/games/protocol";
 import { prisma } from "@/lib/prisma";
@@ -25,23 +25,23 @@ export async function POST(req: Request, ctx: { params: Promise<{ code: string }
   if (!token) return fail("no_token", 401);
 
   try {
-    const room = await findRoom(code);
-    if (!room) return fail("no_room", 404);
+    const duel = await findDuel(code);
+    if (!duel) return fail("no_room", 404);
 
-    const me = room.players.find((p) => p.token === token);
+    const me = duel.duelists.find((d) => d.token === token);
     if (!me?.isHost) return fail("not_host", 403, "Only the host can skip ahead.");
-    if (room.status !== "question" && room.status !== "reveal") {
+    if (duel.status !== "clash" && duel.status !== "resolve") {
       return fail("nothing_to_skip", 409);
     }
 
-    await prisma.gameRoom.updateMany({
-      where: { id: room.id, status: room.status, currentRound: room.currentRound },
+    await prisma.duel.updateMany({
+      where: { id: duel.id, status: duel.status, currentRound: duel.currentRound },
       data: { phaseEndsAt: new Date() },
     });
-    await tick(room.id);
+    await tick(duel.id);
 
-    const fresh = await findRoom(code);
-    return ok({ state: await serializeRoom(fresh!, token) });
+    const fresh = await findDuel(code);
+    return ok({ state: await serializeDuel(fresh!, token) });
   } catch (err) {
     console.error("[api/games/next] failed", err);
     return fail("db_error", 503);

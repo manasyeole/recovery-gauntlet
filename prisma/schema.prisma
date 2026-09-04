@@ -42,33 +42,87 @@ model Answer {
 }
 
 /* ---------------------------------------------------------------------------
- * The Games Room — multiplayer quiz, no accounts.
+ * The Games Room — a combat card game, no accounts.
  *
- * Identity is a random token minted on join and kept in the player's own
- * localStorage. There is nothing to log into and nothing to lose: a room is a
- * six-character code that stops existing a few hours after the last question.
+ * Identity is a random token minted on join and kept in the duelist's own
+ * localStorage. There is nothing to log into and nothing to lose: a duel is a
+ * six-character code that stops existing a few hours after the last clash.
  * ------------------------------------------------------------------------ */
 
-model GameRoom {
+/**
+ * The card catalogue, plus what every card has actually done.
+ *
+ * The *definitions* live in TypeScript (lib/games/cards/*.ts) — they are
+ * content, they belong in code review, and a duel already in progress must
+ * never see them change under it. This table is their mirror, written by
+ * lib/games/cards/sync.ts, and it exists for the two things a constant array
+ * cannot do: be queried (the deck browser sorts and filters here) and
+ * accumulate (the counters below).
+ *
+ * So: the file is the source of truth for what a card *is*, and this row is
+ * the source of truth for what it has *done*. A sync only ever overwrites the
+ * first half.
+ */
+model Card {
+  /** "wwe:undertaker" — roster ids are only unique within their own game. */
+  id       String @id
+  /** Slug from lib/games/catalog.ts — cricket, wwe, one-piece, … */
+  gameSlug String
+  /** Roster-local id, the half after the colon. */
+  cardId   String
+
+  name     String
+  title    String
+  emoji    String
+  /** One of its game's three affinity keys. */
+  affinity String
+  /** common | rare | epic | legend */
+  rarity   String
+
+  /** The six numbers, keyed by their game's stat labels: { "Power": 10, … } */
+  stats Json
+  /** Their sum. Denormalised so the browser can sort on it. */
+  total Int
+
+  abilityKind  String
+  abilityValue Int
+  abilityName  String
+  abilityText  String
+
+  /** Lifetime record, across every duel ever played. Never reset by a sync. */
+  timesPlayed Int @default(0)
+  timesWon    Int @default(0)
+  damageDealt Int @default(0)
+
+  @@unique([gameSlug, cardId])
+  @@index([gameSlug, rarity])
+}
+
+model Duel {
   id       String @id @default(cuid())
   /** The thing you read out loud. Unambiguous alphabet, see lib/games/codes.ts */
   code     String @unique
-  /** Slug from lib/games/catalog.ts — cricket, wwe, one-piece, … */
   gameSlug String
 
-  /** lobby → question → reveal → (question …) → finished */
+  /** solo (one of them is the bot) | room (two browsers) */
+  mode String @default("room")
+  /** easy | normal | hard. Only meaningful in solo. */
+  difficulty String @default("normal")
+
+  /** lobby → clash → resolve → (clash …) → finished */
   status       String @default("lobby")
   currentRound Int    @default(0)
-  totalRounds  Int    @default(10)
-  roundSeconds Int    @default(20)
+  maxRounds    Int    @default(12)
+  turnSeconds  Int    @default(25)
+  startHp      Int    @default(36)
 
   /**
-   * The question ids for this room, shuffled once at creation, as a JSON
-   * array. Storing the whole plan up front means every round is a lookup
-   * rather than a draw, so two players polling at the same instant can never
-   * disagree about what question 7 is.
+   * The event drawn for each round, as a JSON array of roster-local event ids
+   * with nulls for the quiet rounds. Drawn once at creation for the same
+   * reason the quiz drew its questions up front: two browsers polling in the
+   * same millisecond must never disagree about what round 6 is.
    */
-  questionIds String
+  eventIds String
 
   /**
    * When the current phase runs out. Phase changes are driven off this by
@@ -76,58 +130,92 @@ model GameRoom {
    */
   phaseEndsAt DateTime?
 
+  /** Seat that won, -1 for a draw, null while it is still going. */
+  winnerSeat Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  /** Rooms are disposable. Swept by GET /api/games/rooms once past this. */
+  /** Duels are disposable. Swept by POST /api/games/rooms once past this. */
   expiresAt DateTime
 
-  players GamePlayer[]
-  answers GameAnswer[]
+  duelists Duelist[]
+  turns    DuelTurn[]
 
   @@index([expiresAt])
 }
 
-model GamePlayer {
-  id     String   @id @default(cuid())
-  roomId String
-  room   GameRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+model Duelist {
+  id     String @id @default(cuid())
+  duelId String
+  duel   Duel   @relation(fields: [duelId], references: [id], onDelete: Cascade)
 
   /** Secret held only by that browser. Doubles as the host credential. */
-  token  String
-  name   String
-  emoji  String  @default("🎮")
-  score  Int     @default(0)
-  streak Int     @default(0)
+  token String
+  name  String
+  emoji String @default("🎮")
+  /** 0 or 1. Everything downstream indexes by this. */
+  seat   Int
   isHost Boolean @default(false)
+  /** Played by lib/games/ai.ts rather than by a person. */
+  isBot  Boolean @default(false)
+
+  hp Int
+
+  /**
+   * Roster-local card ids as JSON arrays. The hand is the one thing in the
+   * whole schema that is genuinely secret — serializeDuel never puts the
+   * opponent's into a payload, because there is nothing stopping anyone
+   * reading their own network tab.
+   */
+  deck    String
+  hand    String
+  discard String
+
+  damageDealt Int @default(0)
+  roundsWon   Int @default(0)
 
   joinedAt   DateTime @default(now())
-  /** Bumped on every poll, so the lobby can grey out people who wandered off. */
+  /** Bumped on every poll, so the lobby can grey out someone who wandered off. */
   lastSeenAt DateTime @default(now())
 
-  answers GameAnswer[]
+  turns DuelTurn[]
 
-  @@unique([roomId, token])
-  @@unique([roomId, name])
-  @@index([roomId])
+  @@unique([duelId, token])
+  @@unique([duelId, seat])
+  @@unique([duelId, name])
+  @@index([duelId])
 }
 
-model GameAnswer {
-  id       String     @id @default(cuid())
-  roomId   String
-  room     GameRoom   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  playerId String
-  player   GamePlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+/** One duelist's committed play for one round, and what it came to. */
+model DuelTurn {
+  id        String  @id @default(cuid())
+  duelId    String
+  duel      Duel    @relation(fields: [duelId], references: [id], onDelete: Cascade)
+  duelistId String
+  duelist   Duelist @relation(fields: [duelistId], references: [id], onDelete: Cascade)
 
-  round   Int
-  choice  Int
-  correct Boolean
-  points  Int
-  /** Milliseconds from the question appearing to the tap. Drives the bonus. */
-  msTaken Int
+  round Int
+  seat  Int
+
+  /** Roster-local card id. */
+  cardId String
+  /** Index 0–5 into the game's stat labels. */
+  stat   Int
+
+  /** Null until the round resolves — both plays are written face-down first. */
+  dealt   Int?
+  taken   Int?
+  healed  Int?
+  hpAfter Int?
+
+  /** The engine picked for them, because the clock ran out. */
+  timedOut Boolean @default(false)
+  /** Milliseconds from the hand appearing to the tap. */
+  msTaken  Int     @default(0)
 
   createdAt DateTime @default(now())
 
-  // One answer per player per round. First tap is final.
-  @@unique([playerId, round])
-  @@index([roomId, round])
+  // One play per duelist per round. First tap is final.
+  @@unique([duelistId, round])
+  @@index([duelId, round])
 }

@@ -1,0 +1,282 @@
+import type { Roster } from "./types";
+
+/**
+ * Stats, in order: Top Speed, Cornering, Braking, Racecraft, Consistency,
+ * Tyre Care.
+ * Affinity cycle: qualifier ▸ racer ▸ strategist ▸ qualifier.
+ *
+ * A qualifier starts ahead of a racer. A racer drives round a strategist.
+ * A strategist pits early and takes the qualifier's afternoon off him.
+ */
+export const racing: Roster = {
+  cards: [
+    /* ------------------------------ legends ------------------------------ */
+    {
+      id: "senna",
+      name: "Ayrton Senna",
+      title: "Monaco, 1988 · one lap nobody has matched",
+      emoji: "🇧🇷",
+      affinity: "qualifier",
+      rarity: "legend",
+      stats: [9, 10, 9, 9, 7, 4],
+      ability: {
+        kind: "surge",
+        value: 3,
+        name: "One Qualifying Lap",
+        text: "Adds 3 to the stat it attacks with.",
+      },
+    },
+    {
+      id: "schumacher",
+      name: "Michael Schumacher",
+      title: "Seven titles",
+      emoji: "🔴",
+      affinity: "racer",
+      rarity: "legend",
+      stats: [8, 9, 8, 10, 9, 4],
+      ability: {
+        kind: "finisher",
+        value: 55,
+        name: "The In-Lap",
+        text: "Below a third of your health, deals 55% more damage.",
+      },
+    },
+
+    /* ------------------------------- epics ------------------------------- */
+    {
+      id: "verstappen",
+      name: "Max Verstappen",
+      title: "Will not lift",
+      emoji: "🦁",
+      affinity: "racer",
+      rarity: "epic",
+      stats: [8, 9, 8, 9, 6, 3],
+      ability: {
+        kind: "pierce",
+        value: 35,
+        name: "Around the Outside",
+        text: "Ignores 35% of whatever is defending.",
+      },
+    },
+    {
+      id: "hamilton",
+      name: "Lewis Hamilton",
+      title: "Seven titles, 100-plus poles",
+      emoji: "🟢",
+      affinity: "strategist",
+      rarity: "epic",
+      stats: [8, 8, 7, 9, 6, 5],
+      ability: {
+        kind: "drain",
+        value: 40,
+        name: "Manage the Gap",
+        text: "Heals 40% of the damage it deals.",
+      },
+    },
+    {
+      id: "vettel",
+      name: "Sebastian Vettel",
+      title: "Four in a row",
+      emoji: "🔵",
+      affinity: "qualifier",
+      rarity: "epic",
+      stats: [8, 8, 7, 7, 7, 6],
+      ability: {
+        kind: "guard",
+        value: 35,
+        name: "Build the Lead",
+        text: "Cuts incoming damage by 35%.",
+      },
+    },
+
+    /* ------------------------------- rares ------------------------------- */
+    {
+      id: "alonso",
+      name: "Fernando Alonso",
+      title: "Still here",
+      emoji: "🟠",
+      affinity: "racer",
+      rarity: "rare",
+      stats: [6, 7, 7, 9, 5, 4],
+      ability: {
+        kind: "riposte",
+        value: 40,
+        name: "Defends Like a Wall",
+        text: "Sends 40% of the damage it takes straight back.",
+      },
+    },
+    {
+      id: "leclerc",
+      name: "Charles Leclerc",
+      title: "Pole in a car that doesn't deserve it",
+      emoji: "🐎",
+      affinity: "qualifier",
+      rarity: "rare",
+      stats: [7, 8, 7, 6, 5, 5],
+      ability: {
+        kind: "surge",
+        value: 3,
+        name: "Saturday Lap",
+        text: "Adds 3 to the stat it attacks with.",
+      },
+    },
+    {
+      id: "prost",
+      name: "Alain Prost",
+      title: "The Professor",
+      emoji: "🎓",
+      affinity: "strategist",
+      rarity: "rare",
+      stats: [6, 7, 6, 7, 6, 6],
+      ability: {
+        kind: "guard",
+        value: 35,
+        name: "Wins at Walking Pace",
+        text: "Cuts incoming damage by 35%.",
+      },
+    },
+    {
+      id: "lauda",
+      name: "Niki Lauda",
+      title: "Back in the car six weeks later",
+      emoji: "🧢",
+      affinity: "strategist",
+      rarity: "rare",
+      stats: [6, 6, 7, 7, 7, 5],
+      ability: {
+        kind: "rally",
+        value: 6,
+        name: "Back in Six Weeks",
+        text: "Heals 6 the moment it is turned over.",
+      },
+    },
+
+    /* ------------------------------ commons ------------------------------ */
+    {
+      id: "norris",
+      name: "Lando Norris",
+      title: "Quick everywhere, eventually",
+      emoji: "🟡",
+      affinity: "racer",
+      rarity: "common",
+      stats: [6, 7, 6, 6, 4, 4],
+      ability: {
+        kind: "pierce",
+        value: 30,
+        name: "Late Dive",
+        text: "Ignores 30% of whatever is defending.",
+      },
+    },
+    {
+      id: "russell",
+      name: "George Russell",
+      title: "Mr Saturday",
+      emoji: "⏱️",
+      affinity: "qualifier",
+      rarity: "common",
+      stats: [6, 7, 6, 5, 5, 4],
+      ability: {
+        kind: "guard",
+        value: 30,
+        name: "Holds the Lap Together",
+        text: "Cuts incoming damage by 30%.",
+      },
+    },
+    {
+      id: "sainz",
+      name: "Carlos Sainz",
+      title: "Smooth operator",
+      emoji: "🧊",
+      affinity: "strategist",
+      rarity: "common",
+      stats: [5, 6, 6, 6, 5, 5],
+      ability: {
+        kind: "drain",
+        value: 35,
+        name: "The Undercut",
+        text: "Heals 35% of the damage it deals.",
+      },
+    },
+    {
+      id: "bottas",
+      name: "Valtteri Bottas",
+      title: "To let Lewis through, confirm",
+      emoji: "🇫🇮",
+      affinity: "qualifier",
+      rarity: "common",
+      stats: [6, 6, 6, 5, 6, 4],
+      ability: {
+        kind: "riposte",
+        value: 30,
+        name: "Holds the Position",
+        text: "Sends 30% of the damage it takes straight back.",
+      },
+    },
+    {
+      id: "ricciardo",
+      name: "Daniel Ricciardo",
+      title: "Brakes later than you",
+      emoji: "🍯",
+      affinity: "racer",
+      rarity: "common",
+      stats: [5, 6, 8, 6, 4, 4],
+      ability: {
+        kind: "finisher",
+        value: 45,
+        name: "The Late Lunge",
+        text: "Below a third of your health, deals 45% more damage.",
+      },
+    },
+  ],
+
+  events: [
+    {
+      id: "drs",
+      name: "DRS Enabled",
+      text: "Wings open down the straight. Damage up 50%.",
+      kind: "damage_up",
+      value: 50,
+      emoji: "📂",
+    },
+    {
+      id: "safety-car",
+      name: "Safety Car",
+      text: "Delta times, no overtaking. Damage down 40%.",
+      kind: "damage_down",
+      value: 40,
+      emoji: "🚨",
+    },
+    {
+      id: "full-wets",
+      name: "Full Wets",
+      text: "Standing water everywhere. Everything defends 2 better.",
+      kind: "defense_up",
+      value: 2,
+      emoji: "🌧️",
+    },
+    {
+      id: "pit-stop",
+      name: "Pit Stop",
+      text: "Two seconds and four new tyres. Both recover 4.",
+      kind: "heal_both",
+      value: 4,
+      emoji: "🛞",
+    },
+    {
+      id: "red-flag",
+      name: "Red Flag",
+      text: "Standing restart. Everybody's plan for the afternoon is void.",
+      kind: "no_affinity",
+      value: 0,
+      emoji: "🟥",
+    },
+    {
+      id: "engine-modes",
+      name: "Engine Modes Banned",
+      text: "One map for the whole race. No special settings.",
+      kind: "abilities_off",
+      value: 0,
+      emoji: "🔧",
+    },
+  ],
+};

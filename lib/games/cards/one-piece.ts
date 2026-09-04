@@ -1,0 +1,281 @@
+import type { Roster } from "./types";
+
+/**
+ * Stats, in order: Haki, Devil Fruit, Strength, Speed, Endurance, Cunning.
+ * Affinity cycle: haki ▸ fruit ▸ blade ▸ haki.
+ *
+ * The first leg of that triangle is the canon one — armament Haki is how you
+ * hit a Logia at all. The other two legs are made up, and that's fine.
+ */
+export const onePiece: Roster = {
+  cards: [
+    /* ------------------------------ legends ------------------------------ */
+    {
+      id: "luffy",
+      name: "Monkey D. Luffy",
+      title: "The man who will be Pirate King",
+      emoji: "👒",
+      affinity: "fruit",
+      rarity: "legend",
+      stats: [10, 10, 9, 8, 9, 2],
+      ability: {
+        kind: "finisher",
+        value: 60,
+        name: "Gear Fifth",
+        text: "Below a third of your health, deals 60% more damage.",
+      },
+    },
+    {
+      id: "shanks",
+      name: "Shanks",
+      title: "Red-Haired Emperor",
+      emoji: "🍶",
+      affinity: "haki",
+      rarity: "legend",
+      stats: [10, 1, 9, 9, 9, 10],
+      ability: {
+        kind: "guard",
+        value: 45,
+        name: "Conqueror's Haki",
+        text: "Cuts incoming damage by 45%.",
+      },
+    },
+
+    /* ------------------------------- epics ------------------------------- */
+    {
+      id: "kaido",
+      name: "Kaido",
+      title: "The strongest creature alive",
+      emoji: "🐉",
+      affinity: "fruit",
+      rarity: "epic",
+      stats: [9, 9, 10, 4, 10, 1],
+      ability: {
+        kind: "guard",
+        value: 40,
+        name: "Unkillable",
+        text: "Cuts incoming damage by 40%.",
+      },
+    },
+    {
+      id: "mihawk",
+      name: "Dracule Mihawk",
+      title: "World's greatest swordsman",
+      emoji: "🦅",
+      affinity: "blade",
+      rarity: "epic",
+      stats: [9, 1, 8, 8, 8, 9],
+      ability: {
+        kind: "pierce",
+        value: 40,
+        name: "Black Blade",
+        text: "Ignores 40% of whatever is defending.",
+      },
+    },
+    {
+      id: "zoro",
+      name: "Roronoa Zoro",
+      title: "Three swords, no sense of direction",
+      emoji: "⚔️",
+      affinity: "blade",
+      rarity: "epic",
+      stats: [9, 1, 10, 8, 10, 5],
+      ability: {
+        kind: "surge",
+        value: 3,
+        name: "Three-Sword Style",
+        text: "Adds 3 to the stat it attacks with.",
+      },
+    },
+
+    /* ------------------------------- rares ------------------------------- */
+    {
+      id: "sanji",
+      name: "Sanji",
+      title: "Never uses his hands",
+      emoji: "🚬",
+      affinity: "haki",
+      rarity: "rare",
+      stats: [8, 1, 7, 9, 7, 6],
+      ability: {
+        kind: "pierce",
+        value: 35,
+        name: "Diable Jambe",
+        text: "Ignores 35% of whatever is defending.",
+      },
+    },
+    {
+      id: "law",
+      name: "Trafalgar Law",
+      title: "The Surgeon of Death",
+      emoji: "🔪",
+      affinity: "fruit",
+      rarity: "rare",
+      stats: [7, 10, 5, 6, 4, 6],
+      ability: {
+        kind: "riposte",
+        value: 40,
+        name: "Room: Shambles",
+        text: "Sends 40% of the damage it takes straight back.",
+      },
+    },
+    {
+      id: "ace",
+      name: "Portgas D. Ace",
+      title: "Fire Fist",
+      emoji: "🔥",
+      affinity: "fruit",
+      rarity: "rare",
+      stats: [7, 10, 7, 7, 5, 2],
+      ability: {
+        kind: "finisher",
+        value: 50,
+        name: "Great Flame Commandment",
+        text: "Below a third of your health, deals 50% more damage.",
+      },
+    },
+    {
+      id: "hancock",
+      name: "Boa Hancock",
+      title: "The Pirate Empress",
+      emoji: "🐍",
+      affinity: "haki",
+      rarity: "rare",
+      stats: [9, 8, 5, 6, 4, 6],
+      ability: {
+        kind: "guard",
+        value: 35,
+        name: "Love-Love Beam",
+        text: "Cuts incoming damage by 35%.",
+      },
+    },
+
+    /* ------------------------------ commons ------------------------------ */
+    {
+      id: "jinbe",
+      name: "Jinbe",
+      title: "Helmsman of the Straw Hats",
+      emoji: "🦈",
+      affinity: "haki",
+      rarity: "common",
+      stats: [8, 1, 9, 4, 9, 2],
+      ability: {
+        kind: "guard",
+        value: 30,
+        name: "Fish-Man Karate",
+        text: "Cuts incoming damage by 30%.",
+      },
+    },
+    {
+      id: "robin",
+      name: "Nico Robin",
+      title: "The only one who can read the poneglyphs",
+      emoji: "🌺",
+      affinity: "fruit",
+      rarity: "common",
+      stats: [4, 9, 4, 4, 4, 8],
+      ability: {
+        kind: "pierce",
+        value: 30,
+        name: "Mil Fleur",
+        text: "Ignores 30% of whatever is defending.",
+      },
+    },
+    {
+      id: "franky",
+      name: "Franky",
+      title: "SUPER",
+      emoji: "🤖",
+      affinity: "blade",
+      rarity: "common",
+      stats: [2, 1, 9, 5, 9, 7],
+      ability: {
+        kind: "riposte",
+        value: 30,
+        name: "Coup de Vent",
+        text: "Sends 30% of the damage it takes straight back.",
+      },
+    },
+    {
+      id: "brook",
+      name: "Brook",
+      title: "Yohohoho",
+      emoji: "💀",
+      affinity: "blade",
+      rarity: "common",
+      stats: [3, 7, 5, 8, 6, 4],
+      ability: {
+        kind: "drain",
+        value: 40,
+        name: "Soul Solid",
+        text: "Heals 40% of the damage it deals.",
+      },
+    },
+    {
+      id: "chopper",
+      name: "Tony Tony Chopper",
+      title: "Ship's doctor, allegedly a reindeer",
+      emoji: "🦌",
+      affinity: "fruit",
+      rarity: "common",
+      stats: [1, 8, 6, 6, 5, 7],
+      ability: {
+        kind: "rally",
+        value: 6,
+        name: "Rumble Ball",
+        text: "Heals 6 the moment it is turned over.",
+      },
+    },
+  ],
+
+  events: [
+    {
+      id: "buster-call",
+      name: "Buster Call",
+      text: "Five vice admirals and the island is gone. Damage up 50%.",
+      kind: "damage_up",
+      value: 50,
+      emoji: "🚢",
+    },
+    {
+      id: "squall",
+      name: "A Grand Line Squall",
+      text: "The weather takes the round off you. Damage down 40%.",
+      kind: "damage_down",
+      value: 40,
+      emoji: "🌊",
+    },
+    {
+      id: "coated-hull",
+      name: "Coated Hull",
+      text: "A resin skin over everything. Everything defends 2 better.",
+      kind: "defense_up",
+      value: 2,
+      emoji: "🫧",
+    },
+    {
+      id: "ships-doctor",
+      name: "The Ship's Doctor",
+      text: "Chopper gets to both of you. Both recover 4.",
+      kind: "heal_both",
+      value: 4,
+      emoji: "🩺",
+    },
+    {
+      id: "new-world",
+      name: "Into the New World",
+      text: "Nothing here works the way it did. Specialisms don't connect.",
+      kind: "no_affinity",
+      value: 0,
+      emoji: "🧭",
+    },
+    {
+      id: "seastone",
+      name: "Seastone Cuffs",
+      text: "Powers off. Nobody gets their signature move.",
+      kind: "abilities_off",
+      value: 0,
+      emoji: "⛓️",
+    },
+  ],
+};

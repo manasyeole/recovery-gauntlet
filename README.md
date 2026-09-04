@@ -79,79 +79,148 @@ Without a `DATABASE_URL` the site still runs end to end — answers are kept in
 | `POST /api/session` | Creates a `Session`, returns `{ sessionId }`. |
 | `POST /api/answer` | Saves answers. Accepts one or a batch. |
 | `GET /api/admin/sessions` | JSON dump of every run (gated). |
-| `/games` | The games shelf — seven quizzes, plus the join-by-code box. |
-| `/games/create` | Open a room. `?game=<slug>` preselects one. |
-| `/games/room/[code]` | The room itself: seat, lobby, questions, final table. |
+| `/games` | The deck shelf — seven decks, plus the join-by-code box. |
+| `/games/[slug]` | One deck, every card in it, and the rules that deck plays by. |
+| `/games/create` | Open a duel. `?game=<slug>` preselects a deck, `?mode=solo` the computer. |
+| `/games/room/[code]` | The duel itself: seat, lobby, clash, reveal, result. |
 
 ---
 
 ## The Games Room
 
-Seven themed quizzes — cricket, football, WWE, Naruto, One Piece, Pokémon,
-racing — running on **one shared multiplayer engine**. Someone opens a room,
-reads out a six-character code, and everyone answers the same timed question at
-the same time. No accounts, nothing to install.
+A **combat card game** across seven decks — cricket, football, WWE, Naruto, One
+Piece, Pokémon, racing — running on **one shared engine**. Play the computer, or
+read out a six-character code and play whoever has it. No accounts, nothing to
+install.
 
-### How a room works
+### A card
+
+Every card is a fighter with **six stats named after its own sport or story** —
+WWE cards have Power, Technique, Agility, Strike, Submission and Grapple;
+Pokémon cards have HP, Attack, Defense, Sp. Atk, Sp. Def and Speed — plus an
+**affinity**, a **rarity** and one **signature move**.
+
+Rarity is a *stat budget*, not a power level. Every common sums to 33 and every
+legend to 48, so a legend is a more lopsided card rather than a strictly better
+one: Big Show is a common with Power 10 and Agility 2. `npm run check:cards`
+enforces the budget to the point, which is the only thing keeping the game from
+quietly rotting one card at a time.
+
+### A round
 
 ```
-create  ──▶  lobby  ──▶  question  ⇄  reveal  ──▶  finished  ──▶  rematch
-              │            (N sec)     (6 sec)                      │
-              └──────────── same code, same people ─────────────────┘
+create ──▶ lobby ──▶ clash ⇄ resolve ──▶ finished ──▶ rematch
+             │       (N sec)  (7 sec)                    │
+             └──────── same code, same chairs ───────────┘
 ```
 
-- **Identity** is a random token minted on join and kept in that browser's
-  `localStorage`, one per room. Passing it back on a refresh is what returns you
-  to your own score instead of a second seat.
-- **The code is the credential.** Whoever has the link can play, which is the
-  right amount of security for a quiz among friends and none at all for
-  anything else.
-- **Scoring** is 100 for correct plus up to 100 for speed, so a slow right
-  answer always beats a fast wrong one. Every third correct in a row adds 25.
-- **The answer never leaves the server while a round is live** — `correctIndex`
-  first appears in the payload at the reveal, so reading the network tab
-  doesn't help.
+Both duelists put a card down **face-down** and pick **one of its six stats to
+attack with**. Both turn over at once.
+
+Your attack is resolved against **that same stat on their card** — so the read
+is not "who has the bigger card", it is "which number are they thin on". Damage
+is the gap between the two, times two, then bent by:
+
+- **the affinity triangle** — each deck has three archetypes in a cycle
+  (Powerhouse ▸ Technician ▸ High-Flyer ▸ Powerhouse). Beating theirs is worth
+  half as much again; losing to it costs a third;
+- **signature moves** — seven kinds shared by all seven decks, so a Rasengan and
+  a Tombstone Piledriver are the same arithmetic in different hats;
+- **special events** — one turns over every third round and hits both sides
+  equally, so it can make a round strange but never decide it.
+
+Both attacks are computed from the **same pre-clash snapshot**, so the round is
+genuinely simultaneous: knocking someone out does not stop their swing landing,
+and a double knockout is a draw rather than a win for whoever sat down first.
+
+No single swing can exceed `MAX_HIT` — a third of starting health — which is
+what guarantees **no duel is ever over in fewer than three rounds**, however
+perfect the read. Without that ceiling the modifiers multiply up to about 50
+against a starting 36, and a lucky round becomes a one-shot.
+
+### Solo and multiplayer are one code path
+
+The computer opponent is **a duelist row with `isBot` set**. The clock, the
+clash, the reveal and the database cannot tell the difference — the only special
+case is that a bot commits the instant you do, so a solo round ends when you
+have chosen rather than on a timer you are watching alone.
+
+The bot sees exactly what a person opposite would: its own hand, both healths,
+the round's event, and which cards you have already played. It does not see your
+hand. On `hard` it narrows you down by what you have discarded and plays for the
+kill when you are low; on `easy` it mostly picks the wrong stat.
+
+### Two things never leave the server
+
+- **Your hand.** `serializeDuel` sends the opponent a *count*, never the cards.
+- **A committed play**, until both are turned over. There is nothing stopping
+  anyone reading their own network tab, so the other card simply isn't in it.
 
 ### Why polling and not websockets
 
-Vercel's serverless runtime makes a long-lived connection the awkward option
-and a 1.2-second `GET` the boring one. There is no scheduler either: **whoever
-polls next advances the clock** (`lib/games/engine.ts` → `tick`). Every
-transition is a conditional `updateMany` keyed on the state it expects to find,
-so a dozen browsers polling in the same millisecond produce exactly one advance
-and the rest just re-read.
+Vercel's serverless runtime makes a long-lived connection the awkward option and
+a 1.2-second `GET` the boring one. There is no scheduler either: **whoever polls
+next advances the clock** (`lib/games/engine.ts` → `tick`). The clash is
+resolved inside one interactive transaction opened by a conditional update, and
+that update is the lock — a second request blocks on it, then finds the round
+has moved on and matches nothing.
 
-### Adding a game
+### Adding a deck
 
 Two files, no route or component changes:
 
 1. Add an entry to [`lib/games/catalog.ts`](lib/games/catalog.ts) — slug, name,
-   emoji, and its three colours.
-2. Add `lib/games/questions/<slug>.ts` and register it in
-   [`lib/games/questions/index.ts`](lib/games/questions/index.ts).
+   emoji, its **six stat labels**, its **three affinities in beats-order**, and
+   its three colours.
+2. Add `lib/games/cards/<slug>.ts` and register it in
+   [`lib/games/cards/index.ts`](lib/games/cards/index.ts): 14 cards (5 common,
+   4 rare, 3 epic, 2 legend) and 6 events, one of each event kind.
 
-Then `npm run check:questions`, which catches the things a typecheck can't: an
-answer index off by one, two questions sharing an id, two identical choices in
-the same four.
+Then:
 
-> Question **ids must never be renumbered** — a room in progress stores the ids
-> it drew at creation time. Append, don't renumber.
+```bash
+npm run check:cards   # every budget, every triangle, and the combat maths
+npm run sim:duels     # plays thousands of duels — does the deck actually work?
+```
+
+`check:cards` catches what a typecheck can't: a legend that sums to 49, an
+affinity key with a typo silently dropping out of the triangle, a card that can
+one-shot. `sim:duels` answers the question you cannot answer by reading — does a
+better player win more? If `hard` and `easy` finish level, the choices in a
+round mean nothing and the deck needs rebalancing.
+
+> Card **ids must never be renumbered** — a duel in progress stores the ids it
+> was dealt, and the `Card` table keys its lifetime record off them. Append,
+> don't renumber.
+
+### Where the stats live
+
+The card *definitions* live in TypeScript and are mirrored into the **`Card`
+table** by `lib/games/cards/sync.ts`. That split is deliberate:
+
+- what a card **is** — its six numbers, its move — is content. It belongs in a
+  diff, behind `check:cards`, and must not change under a duel already holding
+  its id;
+- what a card **has done** — `timesPlayed`, `timesWon`, `damageDealt` — is
+  exactly what a constant array cannot hold, and accumulates in the row.
+
+A sync overwrites the first half and never touches the second.
 
 ### Games API
 
 | Route | What it does |
 | --- | --- |
-| `POST /api/games/rooms` | Opens a room, seats the host, returns `{ code, token }`. |
+| `POST /api/games/rooms` | Opens a duel, deals both decks, returns `{ code, token }`. |
 | `GET /api/games/rooms/[code]` | The poll endpoint. Advances the clock, marks you present. |
-| `POST …/join` | Takes a seat, or renames you if you already have one. |
-| `POST …/start` | Host only. Puts question 1 up. |
-| `POST …/answer` | Locks one answer in. First tap is final. |
+| `POST …/join` | Takes the other chair, or renames you if you have one. |
+| `POST …/start` | Host only. Deals the first hand. |
+| `POST …/play` | Puts one card down. First tap is final; the card must be in your hand. |
 | `POST …/next` | Host only. Cuts the current phase short. |
-| `POST …/rematch` | Host only. Same room and people, new questions. |
+| `POST …/rematch` | Host only. Same code and chairs, new decks. |
 
-Rooms are disposable — swept six hours after creation, players and answers
+Duels are disposable — swept six hours after creation, duelists and turns
 cascading with them. Unlike the gauntlet, the games section **hard-requires
-Postgres**: a room is shared state by definition, so there is no local fallback.
+Postgres**: a duel is shared state by definition, so there is no local fallback.
 
 ---
 
@@ -229,11 +298,14 @@ model Answer {
 
 One `Session` per person who plays through; one `Answer` row per step.
 
-The games room adds three more tables — `GameRoom`, `GamePlayer`, `GameAnswer`.
-The interesting columns are `GameRoom.questionIds` (the whole question order,
-drawn once at creation so two players polling at the same instant can never
-disagree about what question 7 is) and `GameRoom.phaseEndsAt` (the clock every
-transition is driven off). See [`prisma/schema.prisma`](prisma/schema.prisma).
+The games room adds four more tables — `Card`, `Duel`, `Duelist` and
+`DuelTurn`. The interesting columns are `Duelist.hand` (the one genuinely secret
+thing in the schema — never serialised to the other chair), `Duel.eventIds` (the
+whole event plan, drawn once at creation so two browsers polling at the same
+instant can never disagree about what round 6 is) and `Duel.phaseEndsAt` (the
+clock every transition is driven off). `DuelTurn` keeps every play ever made,
+which is what makes the round-by-round on the results screen a record rather
+than a reconstruction. See [`prisma/schema.prisma`](prisma/schema.prisma).
 
 ---
 
@@ -246,5 +318,6 @@ npm start                # production server
 npm run db:push          # sync schema to the database
 npm run db:migrate       # apply migrations (what the build runs)
 npm run db:studio        # browse the data in Prisma Studio
-npm run check:questions  # validate every quiz bank and the scoring rules
+npm run check:cards      # validate every card budget, triangle and the combat maths
+npm run sim:duels        # play thousands of duels — do they end, and does skill win?
 ```

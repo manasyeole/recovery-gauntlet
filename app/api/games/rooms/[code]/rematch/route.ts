@@ -1,19 +1,20 @@
-import { randomInt } from "node:crypto";
-import { findRoom, plannedIds, serializeRoom } from "@/lib/games/engine";
+import { dealDeck, drawEvents, openingHand } from "@/lib/games/deal";
+import { findDuel, serializeDuel } from "@/lib/games/engine";
 import { fail, ok, readJson, requireDatabase, tokenFrom } from "@/lib/games/http";
 import { cleanCode } from "@/lib/games/protocol";
-import { bankFor } from "@/lib/games/questions";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const DUEL_TTL_MS = 6 * 60 * 60 * 1000;
+
 /**
- * POST /api/games/rooms/:code/rematch — same room, same people, new questions.
+ * POST /api/games/rooms/:code/rematch — same code, same chairs, new decks.
  *
- * Keeps the code so nobody has to re-share it, wipes the scores, and draws a
- * fresh set of questions that avoids the ones just played where the bank is
- * big enough to allow it.
+ * Everything about the duel is reset except who is sitting in it: health back
+ * up, turns wiped, a fresh ten cards each and a fresh event plan. Keeping the
+ * code means nobody has to read six characters out a second time.
  */
 export async function POST(req: Request, ctx: { params: Promise<{ code: string }> }) {
   const noDb = requireDatabase();
@@ -27,55 +28,52 @@ export async function POST(req: Request, ctx: { params: Promise<{ code: string }
   if (!token) return fail("no_token", 401);
 
   try {
-    const room = await findRoom(code);
-    if (!room) return fail("no_room", 404);
+    const duel = await findDuel(code);
+    if (!duel) return fail("no_room", 404);
 
-    const me = room.players.find((p) => p.token === token);
+    const me = duel.duelists.find((d) => d.token === token);
     if (!me?.isHost) return fail("not_host", 403, "Only the host can start a rematch.");
-    if (room.status !== "finished") return fail("not_finished", 409, "That game is still running.");
+    if (duel.status !== "finished") return fail("not_finished", 409, "That duel is still running.");
 
-    const bank = bankFor(room.gameSlug);
-    const justPlayed = new Set(plannedIds(room));
-    const unseen = bank.filter((q) => !justPlayed.has(q.id));
-    // Fall back to the whole bank once it can no longer fill a fresh round.
-    const pool = unseen.length >= room.totalRounds ? unseen : bank;
-
-    const ids = shuffled(pool)
-      .slice(0, Math.min(room.totalRounds, pool.length))
-      .map((q) => q.id);
+    // New decks are dealt outside the transaction — dealDeck is pure CPU and
+    // there is no reason to hold a transaction open across it.
+    const fresh = duel.duelists.map((d) => {
+      const { hand, rest } = openingHand(dealDeck(duel.gameSlug));
+      return { id: d.id, hand: JSON.stringify(hand), deck: JSON.stringify(rest) };
+    });
 
     await prisma.$transaction([
-      prisma.gameAnswer.deleteMany({ where: { roomId: room.id } }),
-      prisma.gamePlayer.updateMany({
-        where: { roomId: room.id },
-        data: { score: 0, streak: 0 },
-      }),
-      prisma.gameRoom.update({
-        where: { id: room.id },
+      prisma.duelTurn.deleteMany({ where: { duelId: duel.id } }),
+      ...fresh.map((f) =>
+        prisma.duelist.update({
+          where: { id: f.id },
+          data: {
+            hp: duel.startHp,
+            damageDealt: 0,
+            roundsWon: 0,
+            hand: f.hand,
+            deck: f.deck,
+            discard: JSON.stringify([]),
+          },
+        })
+      ),
+      prisma.duel.update({
+        where: { id: duel.id },
         data: {
           status: "lobby",
           currentRound: 0,
-          totalRounds: ids.length,
-          questionIds: JSON.stringify(ids),
+          winnerSeat: null,
           phaseEndsAt: null,
-          expiresAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+          eventIds: JSON.stringify(drawEvents(duel.gameSlug, duel.maxRounds)),
+          expiresAt: new Date(Date.now() + DUEL_TTL_MS),
         },
       }),
     ]);
 
-    const fresh = await findRoom(code);
-    return ok({ state: await serializeRoom(fresh!, token) });
+    const after = await findDuel(code);
+    return ok({ state: await serializeDuel(after!, token) });
   } catch (err) {
     console.error("[api/games/rematch] failed", err);
     return fail("db_error", 503);
   }
-}
-
-function shuffled<T>(input: readonly T[]): T[] {
-  const out = [...input];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
 }

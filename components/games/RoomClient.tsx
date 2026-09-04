@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { GAMES, getGame } from "@/lib/games/catalog";
-import { useRoom } from "@/lib/games/useRoom";
-import FinalStage from "./FinalStage";
+import { useDuel } from "@/lib/games/useDuel";
+import ClashStage from "./ClashStage";
+import FinishStage from "./FinishStage";
 import Lobby from "./Lobby";
-import QuestionStage from "./QuestionStage";
-import RevealStage from "./RevealStage";
+import ResolveStage from "./ResolveStage";
 import SeatForm from "./SeatForm";
 
 /**
@@ -18,7 +18,7 @@ import SeatForm from "./SeatForm";
  * poll to come round.
  */
 export default function RoomClient({ code }: { code: string }) {
-  const { state, error, msLeft, stale, apply } = useRoom(code);
+  const { state, error, msLeft, stale, apply } = useDuel(code);
 
   if (error) {
     return (
@@ -28,10 +28,10 @@ export default function RoomClient({ code }: { code: string }) {
         </span>
         <h1 className="mt-4 font-display text-2xl font-bold">{error.message}</h1>
         <p className="muted mt-2 text-sm">
-          Rooms are cleared a few hours after the last question.
+          Duels are cleared a few hours after the last card is played.
         </p>
         <Link href="/games" className="btn-primary mt-6 inline-flex">
-          Open a new one
+          Start a new one
         </Link>
       </div>
     );
@@ -40,14 +40,14 @@ export default function RoomClient({ code }: { code: string }) {
   if (!state) {
     return (
       <div className="card animate-pop-in rounded-chunk p-8 text-center">
-        <p className="muted text-sm">Finding room {code}…</p>
+        <p className="muted text-sm">Finding duel {code}…</p>
       </div>
     );
   }
 
   const game = getGame(state.gameSlug) ?? GAMES[0];
 
-  // No seat in this room yet — either a fresh link, or a browser that has
+  // No chair in this duel yet — either a fresh link, or a browser that has
   // lost its token. Same screen either way.
   if (!state.viewer) {
     return <SeatForm code={code} game={game} state={state} onSeated={apply} />;
@@ -65,10 +65,10 @@ export default function RoomClient({ code }: { code: string }) {
         <Lobby code={code} game={game} state={state} onState={apply} />
       )}
 
-      {state.status === "question" && (
-        // Keyed by round so the optimistic pick can never leak into the next
-        // question if a poll and a transition land in the same tick.
-        <QuestionStage
+      {state.status === "clash" && (
+        // Keyed by round so a card picked but not committed can never leak
+        // into the next round if a poll and a transition land in the same tick.
+        <ClashStage
           key={state.round}
           code={code}
           game={game}
@@ -78,12 +78,10 @@ export default function RoomClient({ code }: { code: string }) {
         />
       )}
 
-      {state.status === "reveal" && (
-        <RevealStage code={code} game={game} state={state} onState={apply} />
-      )}
+      {state.status === "resolve" && <ResolveStage game={game} state={state} />}
 
       {state.status === "finished" && (
-        <FinalStage code={code} game={game} state={state} onState={apply} />
+        <FinishStage code={code} game={game} state={state} onState={apply} />
       )}
     </div>
   );

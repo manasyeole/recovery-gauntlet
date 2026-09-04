@@ -1,16 +1,16 @@
 "use client";
 
-import { PLAYER_TOKEN_HEADER, type RoomState } from "./protocol";
+import { PLAYER_TOKEN_HEADER, type Difficulty, type DuelState } from "./protocol";
 
 /**
  * The browser half of the games section.
  *
- * Identity is a token in localStorage, one per room. That is deliberately all
+ * Identity is a token in localStorage, one per duel. That is deliberately all
  * there is: nobody signs up, nothing is recoverable on another device, and
- * clearing site data simply means you join again as a new player.
+ * clearing site data simply means you sit down again as someone new.
  */
 
-const tokenKey = (code: string) => `rg.game.${code}.token`;
+const tokenKey = (code: string) => `rg.duel.${code}.token`;
 const KEY_LAST_NAME = "rg.game.name";
 const KEY_LAST_EMOJI = "rg.game.emoji";
 
@@ -28,7 +28,7 @@ function writeLocal(key: string, value: string): void {
   try {
     window.localStorage.setItem(key, value);
   } catch {
-    /* private mode — the run still works, it just won't survive a refresh */
+    /* private mode — the duel still works, it just won't survive a refresh */
   }
 }
 
@@ -110,25 +110,27 @@ async function call<T>(
 }
 
 function defaultMessage(status: number): string {
-  if (status === 404) return "That room has closed or never existed.";
+  if (status === 404) return "That duel has ended or never existed.";
   if (status === 503) return "The games server is not reachable right now.";
   return "Something went wrong. Try that again.";
 }
 
 /* ------------------------------ endpoints ------------------------------- */
 
-export interface CreateRoomInput {
+export interface CreateDuelInput {
   gameSlug: string;
   name: string;
   emoji: string;
-  totalRounds: number;
-  roundSeconds: number;
+  mode: "solo" | "room";
+  difficulty: Difficulty;
+  maxRounds: number;
+  turnSeconds: number;
 }
 
-export async function createRoom(
-  input: CreateRoomInput
-): Promise<{ code: string; token: string; state: RoomState }> {
-  const out = await call<{ code: string; token: string; state: RoomState }>("/api/games/rooms", {
+export async function createDuel(
+  input: CreateDuelInput
+): Promise<{ code: string; token: string; state: DuelState }> {
+  const out = await call<{ code: string; token: string; state: DuelState }>("/api/games/rooms", {
     method: "POST",
     body: input,
   });
@@ -137,11 +139,11 @@ export async function createRoom(
   return out;
 }
 
-export async function joinRoom(
+export async function joinDuel(
   code: string,
   input: { name: string; emoji: string }
-): Promise<{ token: string; state: RoomState }> {
-  const out = await call<{ token: string; state: RoomState }>(
+): Promise<{ token: string; state: DuelState }> {
+  const out = await call<{ token: string; state: DuelState }>(
     `/api/games/rooms/${encodeURIComponent(code)}/join`,
     { method: "POST", body: input, token: playerToken(code) }
   );
@@ -150,23 +152,25 @@ export async function joinRoom(
   return out;
 }
 
-export function fetchState(code: string, signal?: AbortSignal): Promise<{ state: RoomState }> {
-  return call<{ state: RoomState }>(`/api/games/rooms/${encodeURIComponent(code)}`, {
+export function fetchState(code: string, signal?: AbortSignal): Promise<{ state: DuelState }> {
+  return call<{ state: DuelState }>(`/api/games/rooms/${encodeURIComponent(code)}`, {
     token: playerToken(code),
     signal,
   });
 }
 
 function post(code: string, action: string, body: Record<string, unknown> = {}) {
-  return call<{ state: RoomState }>(`/api/games/rooms/${encodeURIComponent(code)}/${action}`, {
+  return call<{ state: DuelState }>(`/api/games/rooms/${encodeURIComponent(code)}/${action}`, {
     method: "POST",
     body,
     token: playerToken(code),
   });
 }
 
-export const startGame = (code: string) => post(code, "start");
+export const startDuel = (code: string) => post(code, "start");
 export const skipPhase = (code: string) => post(code, "next");
 export const rematch = (code: string) => post(code, "rematch");
-export const sendAnswer = (code: string, round: number, choice: number) =>
-  post(code, "answer", { round, choice });
+
+/** Put one card down. `stat` is an index into the game's six stat labels. */
+export const playCard = (code: string, round: number, cardId: string, stat: number) =>
+  post(code, "play", { round, cardId, stat });

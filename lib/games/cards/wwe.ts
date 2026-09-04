@@ -1,0 +1,281 @@
+import type { Roster } from "./types";
+
+/**
+ * Stats, in order: Power, Technique, Agility, Strike, Submission, Grapple.
+ * Affinity cycle: powerhouse ▸ technician ▸ highflyer ▸ powerhouse.
+ *
+ * Every card sums to its rarity budget (see RARITY_BUDGET) — a legend is a
+ * more lopsided card, not a bigger one. `npm run check:cards` enforces it.
+ */
+export const wwe: Roster = {
+  cards: [
+    /* ------------------------------ legends ------------------------------ */
+    {
+      id: "undertaker",
+      name: "The Undertaker",
+      title: "The Deadman · 21–0",
+      emoji: "⚰️",
+      affinity: "powerhouse",
+      rarity: "legend",
+      stats: [10, 8, 6, 9, 8, 7],
+      ability: {
+        kind: "finisher",
+        value: 60,
+        name: "Tombstone Piledriver",
+        text: "Below a third of your health, deals 60% more damage.",
+      },
+    },
+    {
+      id: "shawn-michaels",
+      name: "Shawn Michaels",
+      title: "Mr. WrestleMania",
+      emoji: "💫",
+      affinity: "highflyer",
+      rarity: "legend",
+      stats: [6, 10, 10, 8, 7, 7],
+      ability: {
+        kind: "riposte",
+        value: 40,
+        name: "Sweet Chin Music",
+        text: "Sends 40% of the damage it takes straight back.",
+      },
+    },
+
+    /* ------------------------------- epics ------------------------------- */
+    {
+      id: "brock-lesnar",
+      name: "Brock Lesnar",
+      title: "The Beast Incarnate",
+      emoji: "🐂",
+      affinity: "powerhouse",
+      rarity: "epic",
+      stats: [10, 7, 6, 7, 6, 7],
+      ability: {
+        kind: "pierce",
+        value: 35,
+        name: "F-5",
+        text: "Ignores 35% of whatever is defending.",
+      },
+    },
+    {
+      id: "kurt-angle",
+      name: "Kurt Angle",
+      title: "Olympic gold, 1996",
+      emoji: "🥇",
+      affinity: "technician",
+      rarity: "epic",
+      stats: [7, 10, 7, 5, 10, 4],
+      ability: {
+        kind: "guard",
+        value: 35,
+        name: "Ankle Lock",
+        text: "Cuts incoming damage by 35%.",
+      },
+    },
+    {
+      id: "rey-mysterio",
+      name: "Rey Mysterio",
+      title: "The biggest little man",
+      emoji: "🎭",
+      affinity: "highflyer",
+      rarity: "epic",
+      stats: [3, 8, 10, 7, 7, 8],
+      ability: {
+        kind: "surge",
+        value: 3,
+        name: "619",
+        text: "Adds 3 to the stat it attacks with.",
+      },
+    },
+
+    /* ------------------------------- rares ------------------------------- */
+    {
+      id: "john-cena",
+      name: "John Cena",
+      title: "Sixteen-time champion",
+      emoji: "🎺",
+      affinity: "powerhouse",
+      rarity: "rare",
+      stats: [9, 6, 5, 7, 6, 5],
+      ability: {
+        kind: "rally",
+        value: 6,
+        name: "Never Give Up",
+        text: "Heals 6 the moment it is turned over.",
+      },
+    },
+    {
+      id: "bret-hart",
+      name: "Bret Hart",
+      title: "The Excellence of Execution",
+      emoji: "🕶️",
+      affinity: "technician",
+      rarity: "rare",
+      stats: [5, 9, 6, 5, 9, 4],
+      ability: {
+        kind: "guard",
+        value: 30,
+        name: "Sharpshooter",
+        text: "Cuts incoming damage by 30%.",
+      },
+    },
+    {
+      id: "seth-rollins",
+      name: "Seth Rollins",
+      title: "The Architect",
+      emoji: "🏛️",
+      affinity: "highflyer",
+      rarity: "rare",
+      stats: [5, 7, 9, 7, 4, 6],
+      ability: {
+        kind: "pierce",
+        value: 30,
+        name: "Curb Stomp",
+        text: "Ignores 30% of whatever is defending.",
+      },
+    },
+    {
+      id: "doc-gallows",
+      name: "Doc Gallows",
+      title: "Good Brother",
+      emoji: "🖤",
+      affinity: "powerhouse",
+      rarity: "rare",
+      stats: [10, 5, 4, 7, 5, 7],
+      ability: {
+        kind: "surge",
+        value: 2,
+        name: "Gallows Pole",
+        text: "Adds 2 to the stat it attacks with.",
+      },
+    },
+
+    /* ------------------------------ commons ------------------------------ */
+    {
+      id: "randy-orton",
+      name: "Randy Orton",
+      title: "The Viper",
+      emoji: "🐍",
+      affinity: "technician",
+      rarity: "common",
+      stats: [6, 7, 5, 6, 4, 5],
+      ability: {
+        kind: "finisher",
+        value: 45,
+        name: "RKO",
+        text: "Below a third of your health, deals 45% more damage.",
+      },
+    },
+    {
+      id: "aj-styles",
+      name: "AJ Styles",
+      title: "Phenomenal",
+      emoji: "✨",
+      affinity: "highflyer",
+      rarity: "common",
+      stats: [4, 7, 8, 5, 5, 4],
+      ability: {
+        kind: "riposte",
+        value: 30,
+        name: "Styles Clash",
+        text: "Sends 30% of the damage it takes straight back.",
+      },
+    },
+    {
+      id: "becky-lynch",
+      name: "Becky Lynch",
+      title: "The Man",
+      emoji: "🔶",
+      affinity: "technician",
+      rarity: "common",
+      stats: [4, 7, 6, 5, 8, 3],
+      ability: {
+        kind: "drain",
+        value: 40,
+        name: "Dis-arm-her",
+        text: "Heals 40% of the damage it deals.",
+      },
+    },
+    {
+      id: "kofi-kingston",
+      name: "Kofi Kingston",
+      title: "Never touches the floor",
+      emoji: "🦶",
+      affinity: "highflyer",
+      rarity: "common",
+      stats: [3, 5, 9, 6, 3, 7],
+      ability: {
+        kind: "drain",
+        value: 35,
+        name: "Trouble in Paradise",
+        text: "Heals 35% of the damage it deals.",
+      },
+    },
+    {
+      id: "big-show",
+      name: "Big Show",
+      title: "The World's Largest Athlete",
+      emoji: "🗻",
+      affinity: "powerhouse",
+      rarity: "common",
+      stats: [10, 4, 2, 7, 3, 7],
+      ability: {
+        kind: "pierce",
+        value: 30,
+        name: "Knockout Punch",
+        text: "Ignores 30% of whatever is defending.",
+      },
+    },
+  ],
+
+  events: [
+    {
+      id: "hell-in-a-cell",
+      name: "Hell in a Cell",
+      text: "No disqualification. Everything hurts 50% more.",
+      kind: "damage_up",
+      value: 50,
+      emoji: "🔒",
+    },
+    {
+      id: "count-out",
+      name: "Count-Out",
+      text: "Both of you spend the round outside. Damage down 40%.",
+      kind: "damage_down",
+      value: 40,
+      emoji: "🔢",
+    },
+    {
+      id: "rope-break",
+      name: "Rope Break",
+      text: "Everything defends 2 better with a hand on the bottom rope.",
+      kind: "defense_up",
+      value: 2,
+      emoji: "🪢",
+    },
+    {
+      id: "tag-partner",
+      name: "Tag in a Partner",
+      text: "Fresh legs. Both wrestlers recover 4.",
+      kind: "heal_both",
+      value: 4,
+      emoji: "🤝",
+    },
+    {
+      id: "battle-royal",
+      name: "Battle Royal",
+      text: "Thirty in the ring. Nobody's style counts for anything.",
+      kind: "no_affinity",
+      value: 0,
+      emoji: "🌀",
+    },
+    {
+      id: "ref-down",
+      name: "Referee Down",
+      text: "Nobody is watching, so nobody hits their finish.",
+      kind: "abilities_off",
+      value: 0,
+      emoji: "🙈",
+    },
+  ],
+};

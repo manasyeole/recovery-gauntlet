@@ -1,33 +1,30 @@
 /**
- * The wire format between /api/games/* and the room UI, plus the handful of
+ * The wire format between /api/games/* and the duel UI, plus the handful of
  * rules both sides need to agree on. Imported by server routes and client
  * components alike, so nothing in here may touch Prisma or the DOM.
+ *
+ * Cards are sent as ids, never as objects: the rosters are static and already
+ * in the browser's bundle (lib/games/cards), so shipping the same six numbers
+ * down the wire twelve times a duel would be for nothing. The one thing the
+ * server does *not* send is the opponent's hand — see PublicDuelist.
  */
 
-export type RoomStatus = "lobby" | "question" | "reveal" | "finished";
+export type DuelStatus = "lobby" | "clash" | "resolve" | "finished";
+export type DuelMode = "solo" | "room";
+export type Difficulty = "easy" | "normal" | "hard";
+
+export const DIFFICULTIES: readonly Difficulty[] = ["easy", "normal", "hard"];
 
 /** Header the browser identifies itself with. There is no session cookie. */
 export const PLAYER_TOKEN_HEADER = "x-rg-player";
 
-/* ------------------------------- tuning -------------------------------- */
+/* ------------------------------- tuning --------------------------------- */
 
-/** Awarded for any correct answer, however slow. */
-export const BASE_POINTS = 100;
-/** Awarded on top, scaled by how much of the clock was left. */
-export const SPEED_POINTS = 100;
-/** Every third correct answer in a row is worth a little more. */
-export const STREAK_BONUS = 25;
-/** How long the answer + explanation stays up between questions. */
-export const REVEAL_MS = 6_000;
-/** A player who has not polled within this is shown as away. */
-export const AWAY_MS = 25_000;
-
-export const ROUND_SECONDS_CHOICES = [10, 15, 20, 30] as const;
-export const TOTAL_ROUNDS_CHOICES = [5, 10, 15, 20] as const;
+/** A duel is two people. Everything downstream assumes seats 0 and 1. */
+export const SEATS = 2;
 
 export const MIN_NAME = 2;
 export const MAX_NAME = 16;
-export const MAX_PLAYERS = 12;
 
 /** Length of a room code. Lives here so the join box can validate offline. */
 export const CODE_LENGTH = 6;
@@ -38,87 +35,120 @@ export const AVATARS = [
   "🐯", "🐵", "🦕", "🦈", "🐝", "🦉", "🐢", "🦖",
 ] as const;
 
-/* ------------------------------ scoring -------------------------------- */
+/** What the bot is called when nobody names it. */
+export const BOT_NAMES: Readonly<Record<Difficulty, string>> = {
+  easy: "Rookie",
+  normal: "The House",
+  hard: "Grandmaster",
+};
 
-/**
- * Points for one answer. Correctness is worth most of it; the rest is a
- * linear speed bonus, so a confident fast answer beats a lucky slow one but
- * being first is never enough on its own.
- */
-export function scoreAnswer(opts: {
-  correct: boolean;
-  msTaken: number;
-  roundMs: number;
-  /** Streak *before* this answer. */
-  streak: number;
-}): number {
-  if (!opts.correct) return 0;
-  const remaining = Math.max(0, Math.min(1, 1 - opts.msTaken / Math.max(1, opts.roundMs)));
-  const speed = Math.round(SPEED_POINTS * remaining);
-  const streakStep = Math.floor((opts.streak + 1) / 3);
-  return BASE_POINTS + speed + streakStep * STREAK_BONUS;
-}
+export const BOT_EMOJI = "🤖";
 
-/* ------------------------------- state --------------------------------- */
+/* -------------------------------- state ---------------------------------- */
 
-export interface PublicPlayer {
+export interface PublicDuelist {
   id: string;
   name: string;
   emoji: string;
-  score: number;
-  streak: number;
+  seat: number;
   isHost: boolean;
-  /** Polled recently enough to still be in the room. */
+  isBot: boolean;
+  /** Polled recently enough to still be at the table. Always true for bots. */
   online: boolean;
-  /** Has locked in an answer for the round currently on screen. */
-  answered: boolean;
-  /** True for the player reading this payload. */
+
+  hp: number;
+  /** Cards in hand — the count only. The contents are the whole game. */
+  handCount: number;
+  deckCount: number;
+  damageDealt: number;
+  roundsWon: number;
+
+  /** Has locked a card in for the round currently on the table. */
+  committed: boolean;
+  /** True for the duelist reading this payload. */
   isYou: boolean;
 }
 
-export interface LiveQuestion {
-  /** 1-based. */
-  round: number;
-  prompt: string;
-  choices: string[];
+/** One side of a resolved clash. Only ever sent once both cards are face-up. */
+export interface ClashPlay {
+  duelistId: string;
+  seat: number;
+  /** Roster-local id — resolve with findCard(gameSlug, cardId). */
+  cardId: string;
+  /** Index into the game's six stat labels. */
+  stat: number;
+  attack: number;
+  defense: number;
+  affinity: -1 | 0 | 1;
+  dealt: number;
+  taken: number;
+  healed: number;
+  hpAfter: number;
+  notes: string[];
+  /** Nobody committed in time, so the engine picked for them. */
+  timedOut: boolean;
 }
 
 export interface Reveal {
-  correctIndex: number;
-  fact?: string;
-  /** playerId to chosen index, or -1 if they ran out of clock. */
-  picks: Record<string, number>;
-  /** playerId to points earned this round. */
-  gained: Record<string, number>;
+  round: number;
+  /** Roster-local event id, or null on a round with no event. */
+  eventId: string | null;
+  /** Exactly two, ordered by seat. */
+  plays: ClashPlay[];
+  /** Duelist id, or null if both put on identical damage. */
+  roundWinner: string | null;
 }
 
+/** What you, and only you, can see about your own side. */
 export interface Viewer {
   id: string;
-  name: string;
+  seat: number;
   isHost: boolean;
-  /** What you picked this round, null if you haven't. */
-  pick: number | null;
+  /** Roster-local card ids. Yours alone. */
+  hand: string[];
+  /** What you locked in for this round, or null if you haven't. */
+  committed: { cardId: string; stat: number } | null;
 }
 
-export interface RoomState {
+/** One line of history, kept short — the last few rounds, for the sidebar. */
+export interface LogLine {
+  round: number;
+  /** Damage each seat put on, indexed by seat. */
+  dealt: [number, number];
+  /** Health each seat was left on, indexed by seat. */
+  hp: [number, number];
+  eventId: string | null;
+}
+
+export interface DuelState {
   code: string;
   gameSlug: string;
-  status: RoomStatus;
+  mode: DuelMode;
+  status: DuelStatus;
+
   /** 0 while in the lobby. */
   round: number;
-  totalRounds: number;
-  roundSeconds: number;
+  maxRounds: number;
+  turnSeconds: number;
+  startHp: number;
+
   /** Milliseconds left in the current phase, measured on the server clock. */
   msLeft: number;
-  players: PublicPlayer[];
+  /** The event for the round on the table, if any. */
+  eventId: string | null;
+
+  duelists: PublicDuelist[];
   viewer: Viewer | null;
-  question: LiveQuestion | null;
   reveal: Reveal | null;
+  log: LogLine[];
+
+  /** Seat that won, -1 for a draw, null while the duel is still going. */
+  winnerSeat: number | null;
 }
 
-/* ----------------------------- validation ------------------------------ */
+/* ----------------------------- validation ------------------------------- */
 
-const CONTROL_CHARS = /[\u0000-\u001f\u007f]/g;
+const CONTROL_CHARS = new RegExp("[\u0000-\u001f\u007f]", "g");
 
 /** Trim, collapse whitespace, strip control characters. Empty means invalid. */
 export function cleanName(raw: unknown): string {
@@ -143,3 +173,14 @@ export function cleanCode(raw: unknown): string {
     .replace(/[^A-Z0-9]/g, "")
     .slice(0, CODE_LENGTH);
 }
+
+export function cleanDifficulty(raw: unknown): Difficulty {
+  return DIFFICULTIES.find((d) => d === raw) ?? "normal";
+}
+
+/* ------------------------------ re-exports ------------------------------- */
+
+// The combat maths lives in ./rules so it can be read on its own, but every
+// consumer of the protocol wants it too. Re-exported rather than made into a
+// second import everyone has to remember.
+export * from "./rules";

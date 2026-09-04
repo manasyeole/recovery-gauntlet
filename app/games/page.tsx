@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import GameCard from "@/components/games/GameCard";
 import JoinCodeForm from "@/components/games/JoinCodeForm";
+import { cardCount } from "@/lib/games/cards";
 import { GAMES } from "@/lib/games/catalog";
-import { questionCount } from "@/lib/games/questions";
 
 export const metadata: Metadata = {
-  title: "The Games Room — pick one, share a code",
-  description: "Seven quizzes, one room code, no accounts.",
+  title: "The Games Room — seven decks, one duel",
+  description: "A combat card game across seven decks. Play the computer or share a code.",
   robots: { index: false, follow: false },
 };
 
 /**
- * The shelf. Two things to do here and nothing else: start a room, or join
- * one you were handed the code for.
+ * The shelf. Three things to do here and nothing else: look at a deck, join a
+ * duel you were handed the code for, or pick a fight with the computer.
  */
 export default function GamesPage() {
   return (
@@ -21,14 +21,14 @@ export default function GamesPage() {
       <div className="mx-auto w-full max-w-3xl">
         <header className="text-center">
           <span aria-hidden className="block text-4xl">
-            🎮
+            🃏
           </span>
           <h1 className="mt-4 text-balance font-display text-[2rem] font-bold leading-tight sm:text-4xl">
             The Games Room
           </h1>
           <p className="muted mx-auto mt-3 max-w-md text-balance text-sm leading-relaxed">
-            Pick a game, get a code, read it out. Everyone answers the same question at the same
-            time and the clock is worth as much as being right.
+            Pick a deck. Put a card down face-down and choose one of its six stats to attack with —
+            their card defends with the same one. Both turn over at once.
           </p>
         </header>
 
@@ -42,12 +42,22 @@ export default function GamesPage() {
 
         {/* ---------------------------- the shelf -------------------------- */}
         <section className="mt-10" aria-labelledby="shelf-heading">
-          <h2 id="shelf-heading" className="mb-4 text-sm font-semibold">
-            Or start one
-          </h2>
+          <div className="mb-4 flex items-baseline justify-between gap-3">
+            <h2 id="shelf-heading" className="text-sm font-semibold">
+              The decks
+            </h2>
+            <Link
+              href="/games/create?mode=solo"
+              className="text-xs font-semibold underline underline-offset-4"
+              style={{ color: "var(--clay-600)" }}
+            >
+              Play the computer →
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
             {GAMES.map((game) => (
-              <GameCard key={game.slug} game={game} questions={questionCount(game.slug)} />
+              <GameCard key={game.slug} game={game} cards={cardCount(game.slug)} />
             ))}
           </div>
         </section>

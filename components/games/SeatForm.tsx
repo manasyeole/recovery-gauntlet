@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import type { Game } from "@/lib/games/catalog";
-import { joinRoom, lastEmoji, lastName } from "@/lib/games/client";
-import { AVATARS, cleanName, isValidName, type RoomState } from "@/lib/games/protocol";
+import { joinDuel, lastEmoji, lastName } from "@/lib/games/client";
+import { AVATARS, cleanName, isValidName, SEATS, type DuelState } from "@/lib/games/protocol";
 import IdentityFields from "./IdentityFields";
 
 /**
- * Taking a seat in a room you already have the code for.
+ * Taking the other chair in a duel you already have the code for.
  *
  * This is the whole door policy. Whoever opens the link can play — the code
- * is the credential, which is the right amount of security for a quiz among
- * friends and no amount at all for anything else.
+ * is the credential, which is the right amount of security for a card game
+ * among friends and no amount at all for anything else.
  */
 export default function SeatForm({
   code,
@@ -21,8 +21,8 @@ export default function SeatForm({
 }: {
   code: string;
   game: Game;
-  state: RoomState;
-  onSeated: (next: RoomState) => void;
+  state: DuelState;
+  onSeated: (next: DuelState) => void;
 }) {
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState<string>(AVATARS[0]);
@@ -36,8 +36,9 @@ export default function SeatForm({
   }, []);
 
   const cleaned = cleanName(name);
-  const ready = isValidName(cleaned) && !busy;
-  const inProgress = state.status === "question" || state.status === "reveal";
+  const full = state.duelists.length >= SEATS;
+  const closed = state.mode === "solo" || full || state.status !== "lobby";
+  const ready = isValidName(cleaned) && !busy && !closed;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,13 +46,25 @@ export default function SeatForm({
     setBusy(true);
     setError(null);
     try {
-      const { state: next } = await joinRoom(code, { name: cleaned, emoji });
+      const { state: next } = await joinDuel(code, { name: cleaned, emoji });
       onSeated(next);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not join that room.");
+      setError(err instanceof Error ? err.message : "Could not join that duel.");
       setBusy(false);
     }
   }
+
+  // A duel is exactly two chairs, so "no room" is a real and common answer
+  // here rather than an edge case — say it plainly instead of failing on
+  // submit after they have typed a name.
+  const shut =
+    state.mode === "solo"
+      ? "This duel is against the computer."
+      : full
+        ? "Both chairs are taken. A duel is two people."
+        : state.status === "finished"
+          ? "That duel is already over."
+          : "That duel is already under way.";
 
   return (
     <form onSubmit={submit} className="card rounded-chunk p-6 sm:p-8">
@@ -63,25 +76,20 @@ export default function SeatForm({
         {game.emoji}
       </span>
 
-      <h1 className="mt-4 font-display text-2xl font-bold">
-        Join the {game.name} room
-      </h1>
+      <h1 className="mt-4 font-display text-2xl font-bold">Sit down · {game.name}</h1>
       <p className="muted mt-1.5 text-sm">
-        {state.players.length === 0
-          ? "You'll be first in."
-          : `${state.players.length} already in: ${state.players.map((p) => p.name).join(", ")}`}
+        {state.duelists.length === 0
+          ? "Nobody here yet."
+          : `${state.duelists.map((d) => d.name).join(" is waiting")} is waiting.`}
       </p>
 
-      {inProgress && (
-        <p className="mt-4 rounded-2xl bg-tint-butter px-4 py-3 text-sm">
-          This game is already on question {state.round} of {state.totalRounds}. You can join now,
-          but you'll start on nothing.
-        </p>
+      {closed ? (
+        <p className="mt-5 rounded-2xl bg-tint-butter px-4 py-4 text-sm">{shut}</p>
+      ) : (
+        <div className="mt-6">
+          <IdentityFields name={name} emoji={emoji} onName={setName} onEmoji={setEmoji} autoFocus />
+        </div>
       )}
-
-      <div className="mt-6">
-        <IdentityFields name={name} emoji={emoji} onName={setName} onEmoji={setEmoji} autoFocus />
-      </div>
 
       {error && (
         <p className="animate-nudge mt-5 rounded-2xl bg-clay-50 px-4 py-3 text-sm text-clay-600">
@@ -89,9 +97,11 @@ export default function SeatForm({
         </p>
       )}
 
-      <button type="submit" disabled={!ready} className="btn-primary mt-6 w-full">
-        {busy ? "Joining" : "Take a seat"}
-      </button>
+      {!closed && (
+        <button type="submit" disabled={!ready} className="btn-primary mt-6 w-full">
+          {busy ? "Sitting down" : "Take the chair"}
+        </button>
+      )}
     </form>
   );
 }

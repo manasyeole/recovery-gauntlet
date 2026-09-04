@@ -1,0 +1,114 @@
+lib/games/cards/racing.ts
+  s_6d158ff01b2782::t_e028d104f220ad 1-282
+scripts/check-cards.mts
+  s_6d158ff01b2782::t_1a0d1f2bf70740 266-269,271-273,275,281,283,285-289,294,296-297,299-303
+  s_6d158ff01b2782::t_3a0a63492bda61 41
+  s_6d158ff01b2782::t_102521b802821e 1-40,42-265,270,274,276-280,282,284,290-293,295,298,304-337
+components/games/GameCard.tsx
+  s_6d158ff01b2782::t_046459219ff9ae 5-7,9,12,18,41-48
+lib/games/cards/wwe.ts
+  s_6d158ff01b2782::t_7dcad778d9ae0f 1-281
+lib/games/client.ts
+  s_6d158ff01b2782::t_4e2cd297f29b94 3,8,10,13,31,113,120,124-127,130-133,142,145-146,155-156,163,170,173-176
+lib/games/deal.ts
+  s_6d158ff01b2782::t_c3d0f168cd587f 1-110
+app/api/games/rooms/[code]/join/route.ts
+  s_6d158ff01b2782::t_45ed7902a24750 2-3,5,12,18-19,33-34,37,41-42,44,48-49,52-53,55-56,58-65,68-73,75-78,80,84-91,95-96,98-99
+lib/games/cards/sync.ts
+  s_6d158ff01b2782::t_2bb1714e21e021 1-92,112-154
+  s_6d158ff01b2782::t_ecab5fb076357a 93-111
+lib/games/catalog.ts
+  s_6d158ff01b2782::t_3a6ac1f39f6fa3 2,4-19,26-36,41,43,45-54,68,70-78,87,89-97,108-116,127-135,146-154,163,165-173,184-192,205-232
+lib/games/ai.ts
+  s_6d158ff01b2782::t_c875f04d393f6b 1-199
+prisma/schema.prisma
+  s_6d158ff01b2782::t_86061af56decb7 45,47-49,52-101,107-112,115-117,120-123,125,133-135,138,141-142,147-150,153-157,159-175,178,181,183-186,189-214,218-220
+app/api/games/rooms/[code]/route.ts
+  s_6d158ff01b2782::t_30369248d9e874 1,10,26-27,32-35,40-41,43
+lib/games/cards/one-piece.ts
+  s_6d158ff01b2782::t_94be6b6bfdc6f5 1-281
+scripts/simulate-duels.mts
+  s_6d158ff01b2782::t_4f7db19debd259 1-246
+app/api/games/rooms/[code]/next/route.ts
+  s_6d158ff01b2782::t_85f693f02aa4f4 1,28-29,31,33,37-38,41,43-44
+components/games/DuelHeader.tsx
+  s_6d158ff01b2782::t_acd10a51ec5b79 1-151
+lib/games/cards/naruto.ts
+  s_6d158ff01b2782::t_b68a6a724a8554 1-278
+components/games/ResolveStage.tsx
+  s_6d158ff01b2782::t_f3e5eaa4b24f9d 1-123
+app/games/[slug]/page.tsx
+  s_6d158ff01b2782::t_ca749367bbc7d8 1-4,6-177
+  s_6d158ff01b2782::t_3e769947eb086b 5
+app/api/games/rooms/[code]/rematch/route.ts
+  s_6d158ff01b2782::t_812788e69d4df3 1-2,10-11,13,15-17,31-32,34,36,38-43,46-61,65,67-68,73-74
+lib/games/cards/cricket.ts
+  s_6d158ff01b2782::t_9b25e4e5731c63 1-278
+lib/games/engine.ts
+  s_6d158ff01b2782::t_a3ae23c602083c 204-206,209-210
+  s_6d158ff01b2782::t_1b720ae1cb12c8 1,4-5,7-10,13-22,26,28-29,31-33,35,37,41-43,45,52-67,70-80,83,86-88,90-91,93,95-105,112,114-177,179-203,207-208,211-241,243-346,352-354,356-391,395-398,404-408,410-411,413-414,416-447,450-452,454-463,466-484,486-488,490-493,495-496,500,502-503,507-508,584,589-598,601,603,605,607
+  s_6d158ff01b2782::t_a9a968de0c04c5 453
+  s_6d158ff01b2782::t_bf53215206d8ac 512-583,585-588
+components/games/ClashStage.tsx
+  s_6d158ff01b2782::t_886111f30171e0 1-198
+package.json
+  s_6d158ff01b2782::t_ab4aaa0d49c6e4 14-15
+lib/games/cards/types.ts
+  s_6d158ff01b2782::t_e0d5ad205a0d91 1-147
+README.md
+  s_6d158ff01b2782::t_6e63cecac158ef 82-85,91-94,96-109,112-114,117-157,161-166,168,173-199,201-205,207,213,215-217,219,221,223
+  s_6d158ff01b2782::t_9ca6c94807d552 301-308,321-322
+app/games/page.tsx
+  s_6d158ff01b2782::t_74e9b6d4f2ebe2 5,9-10,15-16,24,30-31,45-57,60
+prisma/migrations/20260904090000_card_duels/migration.sql
+  s_6d158ff01b2782::t_8e4d1f64786261 1-142
+app/api/games/rooms/route.ts
+  s_6d158ff01b2782::t_63b124d8d336dc 2-3,5-6,9-11,15,17-19,26-27,35,37,40-47,56,61-63,65-68,71-96,103,107-120,123,126,135,138-144
+lib/games/rules.ts
+  s_6d158ff01b2782::t_4b0f44a0b50836 29-43
+  s_6d158ff01b2782::t_47ad180583dd4e 136-137,243
+  s_6d158ff01b2782::t_aa5707f0394a6f 1-28,44-135,138-225,232-235,237-242,244-343
+  s_6d158ff01b2782::t_8590e27eeaac59 226-231,236
+app/api/games/rooms/[code]/play/route.ts
+  s_6d158ff01b2782::t_138d803178d268 1-109
+app/api/games/rooms/[code]/start/route.ts
+  s_6d158ff01b2782::t_427af0f6ce028e 1,3,10,13,27-28,30,32-39,41,43,47-48
+components/games/PlayingCard.tsx
+  s_6d158ff01b2782::t_c9a35a0f575116 1-236
+components/games/FinishStage.tsx
+  s_6d158ff01b2782::t_3409e7757f2232 1-171
+components/games/Lobby.tsx
+  s_6d158ff01b2782::t_cc041631c456a9 5-7,9,12-14,24-25,29,31-36,42,51-56,58-61,63-85,88-90,94-110,121,124,128
+components/games/SeatForm.tsx
+  s_6d158ff01b2782::t_30d41299bbd65a 5-6,10,13-14,24-25,39-41,49,52,57-68,79,81-83,86-91,100-104
+components/games/RoomClient.tsx
+  s_6d158ff01b2782::t_4d5f3d9c95648f 5-7,9,21,31,34,43,50,68-71,81,84
+components/games/CreateRoomForm.tsx
+  s_6d158ff01b2782::t_33a0ea20f04b6b 6-7,11,13-15,19-24,26,38-41,64,68-71,75,82,84,111-156,159,164,168,170-171,177-180,190,194-196,202-227,254
+lib/games/cards/football.ts
+  s_6d158ff01b2782::t_b6306cd452d73e 1-278
+lib/games/protocol.ts
+  s_6d158ff01b2782::t_58cd5091e26a73 2,5-9,12-16,21,23-24,38-43,45,47,49,53,55-56,58-68,72-89,93-99,102,105,107-110,113-123,126-128,131-134,137-140,143-146,149,151,176-186
+lib/games/cards/index.ts
+  s_6d158ff01b2782::t_8e587758578b7c 1-73
+lib/games/cards/pokemon.ts
+  s_6d158ff01b2782::t_088424a348afc7 1-286
+lib/games/useDuel.ts
+  s_6d158ff01b2782::t_e119aef8299a87 5,8,10-14,17,19-20,27-29,35-36,40-41,50,63,74,94,121,129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "68e9e116dd416aa13f0cffaefa6085fdf57065d3",
+  "prompts": {},
+  "sessions": {
+    "s_6d158ff01b2782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ff0641a3-cd74-4bb6-9e1f-a1f232382953",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Manas Yeole <manas.yeole@definelabs.com>"
+    }
+  }
+}
